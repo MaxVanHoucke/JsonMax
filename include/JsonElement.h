@@ -7,30 +7,64 @@
 
 #include <string>
 #include <vector>
-#include "JsonObject.h"
+
+class JsonObject;
 
 class JsonElement {
 public:
 
+    enum Type {
+        INTEGER,
+        BOOLEAN,
+        FRACTION,
+        OBJECT,
+        STRING,
+        ARRAY,
+        JSON_NULL
+    };
+
     JsonElement();
 
-    operator=(std::string string);
-    operator=(long num);
-    operator=(double fract);
-    operator=(JsonObject obj);
-    operator=(const std::vector<JsonElement>& arr);
+    std::string toString(int indent) const;
 
-    operator const std::vector<JsonElement>&() const;
-    operator double() const;
+    JsonElement& operator=(const std::string& string);
+    JsonElement& operator=(int num);
+    JsonElement& operator=(double fract);
+    JsonElement& operator=(bool boolean);
+    JsonElement& operator=(JsonObject& obj);
+    JsonElement& operator=(const std::vector<JsonElement>& arr);
+
     operator long() const;
+    operator bool() const;
+    operator double() const;
+    operator JsonObject*() const;
     operator std::string() const;
+    operator const std::vector<JsonElement>&() const;
+
+    void setNumber(long number);
+    void setBoolean(bool boolean);
+    void setFraction(double fraction);
+    void setObject(JsonObject& object);
+    void setString(const std::string &string);
+    void setArray(const std::vector<JsonElement> &array);
+
+    bool isNumber() const;
+    bool isBoolean() const;
+    bool isFraction() const;
+    bool isObject() const;
+    bool isString() const;
+    bool isArray() const;
 
 private:
+
+    void reset();
+
+    Type type;
 
     long number;
     bool boolean;
     double fraction;
-    JsonObject object;
+    JsonObject* object;
     std::string string;
     std::vector<JsonElement> array;
 

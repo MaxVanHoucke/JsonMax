@@ -9,7 +9,9 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+
 #include "JsonElement.h"
+
 
 class JsonObject {
 public:
@@ -20,18 +22,19 @@ public:
     JsonObject() = default;
 
     /**
-     *
      * @param member
      * @return
      */
-    JsonElement operator[](const std::string& member);
+    JsonElement& operator[](const std::string& member);
+
+    std::string toString() const;
 
 private:
 
     /**
      * The elements of the object
      */
-    std::unordered_map<std::string, JsonElement> elements;
+    std::vector<std::pair<std::string, JsonElement*>> elements;
 
 };
 
