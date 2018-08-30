@@ -20,7 +20,7 @@ std::string JsonElement::toString(int indent = 0) const {
         case OBJECT:
             return object->toString();
         case STRING:
-            return string;
+            return "\"" + string + "\"";
         case ARRAY: {
             std::string arrayElements;
             for (int i = 0; i < array.size(); i++) {
@@ -39,7 +39,6 @@ std::string JsonElement::toString(int indent = 0) const {
     }
 }
 
-void JsonElement::reset() {}
 
 JsonElement& JsonElement::operator=(int num) {
     setNumber(num);
@@ -52,7 +51,7 @@ JsonElement& JsonElement::operator=(double fract) {
     return *this;
 }
 
-JsonElement& JsonElement::operator=(JsonObject& obj) {
+JsonElement& JsonElement::operator=(JsonObject obj) {
     setObject(obj);
     return *this;
 }
@@ -72,6 +71,19 @@ JsonElement& JsonElement::operator=(bool boolean) {
     return *this;
 }
 
+JsonElement& JsonElement::operator=(const char *c_string) {
+    setString(c_string);
+    return *this;
+}
+
+JsonElement& JsonElement::operator[](const std::string &string) {
+    return object->operator[](string);
+}
+
+JsonElement& JsonElement::operator[](const char *c_string) {
+    return object->operator[](c_string);
+}
+
 
 void JsonElement::setNumber(long number) {
     JsonElement::number = number;
@@ -88,8 +100,9 @@ void JsonElement::setFraction(double fraction) {
     type = FRACTION;
 }
 
-void JsonElement::setObject(JsonObject& object) {
-    JsonElement::object = &object;
+void JsonElement::setObject(JsonObject object) {
+    JsonElement::object = new JsonObject();
+    *JsonElement::object = object;
     type = OBJECT;
 }
 

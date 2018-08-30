@@ -20,7 +20,7 @@ JsonElement& JsonObject::operator[](const std::string &member) {
 std::string JsonObject::toString() const {
     std::string output = "{";
     for (const auto& elem: elements) {
-        output += "\"" + elem.first + "\": \"" + elem.second->toString(0) + "\", ";
+        output += "\"" + elem.first + "\": " + elem.second->toString(0) + ", ";
     }
     output.pop_back();
     output.pop_back();
