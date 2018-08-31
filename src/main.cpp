@@ -8,21 +8,21 @@ int main() {
     object["what"] = 5;
     object["test"] = "blah";
 
-    JsonObject other;
-    other["name"] = "Max";
-
-    object["person"] = other;
-
+    object["person"] = JsonObject();
     object["person"]["age"] = 19;
     object["person"]["dog"] = JsonObject();
     object["person"]["dog"]["sound"] = true;
 
-    object["blah"] = "hmmmm";
 
-//    auto a = object["person"];
-//    a["age"] = 19;
+    object["blah"].setNULL();
 
-    std::cout << object.toString();
+    JsonObject wa;
+    wa["hmm"] = "e2";
+    wa["hsdf"];
+
+    object["person"]["things"] = {3, "test", wa};
+
+    std::cout << object.toString(4);
 
     return 0;
 }
