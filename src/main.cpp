@@ -15,7 +15,9 @@ int main() {
 
     object["person"]["age"] = 19;
     object["person"]["dog"] = JsonObject();
-    object["person"]["dog"]["sound"] = "woof";
+    object["person"]["dog"]["sound"] = true;
+
+    object["blah"] = "hmmmm";
 
 //    auto a = object["person"];
 //    a["age"] = 19;

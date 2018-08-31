@@ -27,7 +27,9 @@ public:
      */
     JsonElement& operator[](const std::string& member);
 
-    std::string toString() const;
+    std::string toString(int indent = 0) const;
+
+    static std::string indent(const std::string& json, int indentation);
 
 private:
 
