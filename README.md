@@ -1,3 +1,3 @@
 # JsonMax
 
-### A lightweight Json serializer and deserializer for c++
+### JsonMax, a lightweight Json serializer/deserializer and data type for c++
