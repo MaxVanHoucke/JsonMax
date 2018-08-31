@@ -37,11 +37,15 @@ public:
         }
     }
 
-    class TypeException: public std::exception {
+    class JsonTypeException: public std::exception {
     public:
 
-        TypeException(JsonElement::Type actual, JsonElement::Type expected) {
+        JsonTypeException(JsonElement::Type actual, JsonElement::Type expected) {
             msg = "Casting an element of type " + JsonElement::typeToString(actual) + " to " + JsonElement::typeToString(expected) + " is not possible.";
+        }
+
+        JsonTypeException(const std::string& str) {
+            msg = str;
         }
 
         virtual const char* what() const throw() {
@@ -54,7 +58,10 @@ public:
 
     };
 
+    static JsonElement null();
+
     JsonElement();
+
 
     JsonElement(const std::string& string);
     JsonElement(const char* c_string);
@@ -63,6 +70,8 @@ public:
     JsonElement(bool boolean);
     JsonElement(const JsonObject& obj);
     JsonElement(const std::vector<JsonElement>& arr);
+    JsonElement(std::nullptr_t pointer);
+
 
     std::string toString(unsigned int indent = 0) const;
 
@@ -79,6 +88,7 @@ public:
     JsonElement& operator=(bool boolean);
     JsonElement& operator=(const JsonObject& obj);
     JsonElement& operator=(const std::vector<JsonElement>& arr);
+    JsonElement& operator=(std::nullptr_t pointer);
 
     operator int() const;
     operator bool() const;
@@ -110,7 +120,5 @@ private:
     std::vector<JsonElement> array;
 
 };
-
-
 
 #endif //JSONMAX_JSONELEMENT_H

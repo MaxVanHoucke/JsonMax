@@ -2,9 +2,10 @@
  * @author Max Van Houcke
  */
 
-#include <math.h>
 #include "../include/JsonElement.h"
+
 #include "../include/JsonObject.h"
+#include <math.h>
 
 JsonElement::JsonElement(): type(UNINITIALIZED) {}
 
@@ -76,7 +77,10 @@ JsonElement& JsonElement::operator=(const char *c_string) {
 }
 
 JsonElement& JsonElement::operator[](const char *c_string) {
-    return object->operator[](c_string);
+    if (type == OBJECT) {
+        return object->operator[](c_string);
+    }
+    throw JsonTypeException("Invalid use of operator[](const char*), element is not a json object.");
 }
 
 
@@ -156,7 +160,7 @@ JsonElement::Type JsonElement::getType() const {
 
 void JsonElement::checkType(JsonElement::Type castType) const {
     if (type != castType) {
-        throw TypeException(type, castType);
+        throw JsonTypeException(type, castType);
     }
 }
 
@@ -186,4 +190,22 @@ JsonElement::JsonElement(const JsonObject &obj) {
 
 JsonElement::JsonElement(const std::vector<JsonElement> &arr) {
     setArray(arr);
+}
+
+JsonElement& JsonElement::operator=(std::nullptr_t pointer) {
+    if (pointer == nullptr) {
+        type = JSON_NULL;
+    }
+}
+
+JsonElement JsonElement::null() {
+    JsonElement element;
+    element.setNULL();
+    return element;
+}
+
+JsonElement::JsonElement(std::nullptr_t pointer) {
+    if (pointer == nullptr) {
+        type = JSON_NULL;
+    }
 }

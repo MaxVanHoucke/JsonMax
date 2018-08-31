@@ -3,26 +3,16 @@
 
 int main() {
 
-    JsonObject object;
-    object["test"] = "hmm";
-    object["what"] = 5;
-    object["test"] = "blah";
+    JsonObject restaurant;
 
-    object["person"] = JsonObject();
-    object["person"]["age"] = 19;
-    object["person"]["dog"] = JsonObject();
-    object["person"]["dog"]["sound"] = true;
+    restaurant["name"] = "Cosmo";
+    restaurant["opening date"] = 2007;
+    restaurant["owner"] = JsonObject();
+    restaurant["owner"]["name"] = "Max";
+    restaurant["menu"] = {"Pizza", "Pasta", "Seafood"};
+    restaurant["cat"] = nullptr;
 
-
-    object["blah"].setNULL();
-
-    JsonObject wa;
-    wa["hmm"] = "e2";
-    wa["hsdf"];
-
-    object["person"]["things"] = {3, "test", wa};
-
-    std::cout << object.toString(4);
+    std::cout << restaurant.toString(4);
 
     return 0;
 }
