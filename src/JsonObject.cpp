@@ -19,14 +19,16 @@ JsonElement& JsonObject::operator[](const std::string &member) {
 
 std::string JsonObject::toString(unsigned int indent) const {
     std::string output = "{";
-    for (const auto& elem: elements) {
+    for (const auto &elem: elements) {
         if (elem.second->getType() == JsonElement::UNINITIALIZED) {
             continue;
         }
         output += "\"" + elem.first + "\": " + elem.second->toString(0) + ", ";
     }
-    output.pop_back();
-    output.pop_back();
+    if (output.size() > 2) {
+        output.pop_back();
+        output.pop_back();
+    }
     output += "}";
 
     if (indent) {
@@ -59,7 +61,7 @@ std::string JsonObject::indent(const std::string &json, int indentation) {
             normal = false;
             spaces -= indentation;
             output += "\n" + std::string(spaces, ' ') + std::string(1, symbol);
-        } else if (symbol == ',') {
+        } else if (symbol == ',' and !inString) {
             output += ",\n" + std::string(spaces - 1, ' ');
             normal = false;
         }

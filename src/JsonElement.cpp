@@ -29,7 +29,7 @@ std::string JsonElement::toString(unsigned int indent) const {
                 if (i != array.size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
-            if (indent) JsonObject::indent(arrayElements, indent);
+            if (indent) return JsonObject::indent(arrayElements, indent);
             return arrayElements;
         }
         case JSON_NULL:
@@ -208,4 +208,12 @@ JsonElement::JsonElement(std::nullptr_t pointer) {
     if (pointer == nullptr) {
         type = JSON_NULL;
     }
+}
+
+JsonElement::JsonElement(const std::initializer_list<JsonElement> &arr) {
+    setArray(arr);
+}
+
+JsonElement& JsonElement::operator=(const std::initializer_list<JsonElement> &arr) {
+    setArray(arr);
 }

@@ -70,6 +70,7 @@ public:
     JsonElement(bool boolean);
     JsonElement(const JsonObject& obj);
     JsonElement(const std::vector<JsonElement>& arr);
+    JsonElement(const std::initializer_list<JsonElement>& arr);
     JsonElement(std::nullptr_t pointer);
 
 
@@ -88,6 +89,7 @@ public:
     JsonElement& operator=(bool boolean);
     JsonElement& operator=(const JsonObject& obj);
     JsonElement& operator=(const std::vector<JsonElement>& arr);
+    JsonElement& operator=(const std::initializer_list<JsonElement>& arr);
     JsonElement& operator=(std::nullptr_t pointer);
 
     operator int() const;
