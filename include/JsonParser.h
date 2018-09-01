@@ -14,6 +14,23 @@
 class JsonParser {
 public:
 
+    class JsonParsingException: public std::exception {
+    public:
+
+        friend class JsonParser;
+
+        virtual const char* what() const throw() {
+            return msg.c_str();
+        }
+
+    protected:
+
+        JsonParsingException(const char* message): msg(message) {}
+
+        std::string msg;
+
+    };
+
     static JsonElement parse(const std::string& json);
 
     static int findIndex(size_t start, char symbol, const std::string& string);
