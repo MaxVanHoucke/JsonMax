@@ -217,3 +217,13 @@ JsonElement::JsonElement(const std::initializer_list<JsonElement> &arr) {
 JsonElement& JsonElement::operator=(const std::initializer_list<JsonElement> &arr) {
     setArray(arr);
 }
+
+std::ostream& operator<<(std::ostream& out, const JsonElement& element) {
+    std::string output = element.toString();
+    if (!output.empty() and output.front() == '"' and output.back() == '"') {
+        output.pop_back();
+        if (!output.empty()) output.erase(0, 1);
+    }
+    out << output;
+    return out;
+}

@@ -82,6 +82,8 @@ public:
 
     JsonElement& operator[](const char* c_string);
 
+    friend std::ostream& operator<<(std::ostream& out, const JsonElement& element);
+
     JsonElement& operator=(const std::string& string);
     JsonElement& operator=(const char* c_string);
     JsonElement& operator=(int num);
@@ -122,5 +124,8 @@ private:
     std::vector<JsonElement> array;
 
 };
+
+std::ostream& operator<<(std::ostream&, const JsonElement&);
+
 
 #endif //JSONMAX_JSONELEMENT_H

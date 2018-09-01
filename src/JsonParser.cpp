@@ -62,11 +62,11 @@ JsonElement JsonParser::parse(const std::string &json) {
     //EXCEPTION
 }
 
-int JsonParser::findIndex(int start, char symbol, const std::string &string) {
+int JsonParser::findIndex(size_t start, char symbol, const std::string &string) {
     bool skip = false;
     bool inString = false;
 
-    for (int i = start; i < string.size(); i++) {
+    for (size_t i = start; i < string.size(); i++) {
         if (skip) {
             skip = false;
             continue;
@@ -80,7 +80,7 @@ int JsonParser::findIndex(int start, char symbol, const std::string &string) {
         }
 
         if (string[i] == symbol and (!inString or symbol == '"')) {
-            return i;
+            return int(i);
         }
     }
 
@@ -202,95 +202,83 @@ JsonObject JsonParser::parseObject(const std::string &object) {
 
     JsonObject json;
 
-    bool keyFound = false;
-    bool stopFound = false;
-    bool firstEnded = false;
-    std::string key;
+    size_t index = 0;
+    while (true) {
 
-    int index = 0;
-    while (index < element.size()) {
-
-        if (firstEnded) {
-            if (element[index] == ',') {
-                firstEnded = false;
-            } else if (element[index] == '}') {
-                break;
-            }
+        index = element.find_first_not_of(" \t\n", index);
+        if (index == std::string::npos or element[index] != '"') {
+            std::cout << "Exception";
         }
 
-        else if (!keyFound) {
-            if (element[index] == '"') {
-                int i = findIndex(index + 1, '"', element);
-                if (i == -1) {
-                    //exception
-                }
-                key = element.substr(index + 1, i - index - 1);
-                if (json[key].getType() != JsonElement::UNINITIALIZED) {
-                    //exception
-                }
-                index = i;
-                keyFound = true;
-            }
-            else if (element[index] != ' ') {
-                //exc
-            }
+        int i = findIndex(index + 1, '"', element);
+        if (i == -1) {
+            std::cout << "Exception";
         }
 
-        else if (!stopFound) {
-            if (element[index] == ':') {
-                stopFound = true;
-            } else if (element[index] != ' ') {
-                //exc
-            }
+        std::string key = element.substr(index + 1, i - index - 1);
+
+        if (json[key].getType() != JsonElement::UNINITIALIZED) {
+            std::cout << "Exception";
         }
 
-        else {
+        index = size_t(i) + 1;
 
-            if (element[index] == ' ') {
+        index = element.find_first_not_of(" \t\n", index);
 
-            }
-
-            else if (element[index] == '{') {
-                int i = findEnding(index, '{', element);
-                if (i == -1) {
-                    //exc
-                }
-
-                json[key] = parse(element.substr(index, i - index));
-                index = i + 1;
-                firstEnded = true;
-                keyFound = false;
-                stopFound = false;
-                continue;
-            }
-
-            else if (element[index] == '[') {
-                //TODO
-            }
-
-            else {
-                int a = findIndex(index, ',', element);
-                if (a == -1) {
-                    a = findIndex(index, '}', element);
-                }
-
-                json[key] = parse(element.substr(index, a - index));
-
-                index = a;
-                firstEnded = true;
-                keyFound = false;
-                stopFound = false;
-                continue;
-            }
+        if (index == std::string::npos or element[index] != ':') {
+            std::cout << "Exception";
         }
 
         index++;
+
+        index = element.find_first_not_of(" \t\n", index);
+
+        if (index == std::string::npos) {
+            std::cout << "Exception";
+        }
+
+        if (element[index] == '{') {
+            int i = findEnding(index, '{', element);
+            if (i == -1) {
+                std::cout << "Exception";
+            }
+
+            json[key] = parse(element.substr(index, i - index + 1));
+            index = i + 1;
+        }
+
+        else if (element[index] == '[') {
+            //TODO
+        }
+
+        else {
+            int a = findIndex(index, ',', element);
+            if (a == -1) {
+                a = element.size();
+            }
+
+
+            json[key] = parse(element.substr(index, a - index));
+            index = size_t(a);
+        }
+
+        index = element.find_first_not_of(" ", index);
+
+        if (index == std::string::npos) {
+            break;
+        }
+        if (element[index] != ',') {
+            std::cout << "Exception";
+        }
+
+        index++;
+
     }
 
     return json;
 }
 
-int JsonParser::findEnding(int start, char symbol, const std::string& string) {
+int JsonParser::findEnding(size_t start, char symbol, const std::string& string) {
     bool skip = false;
     bool inString = false;
 

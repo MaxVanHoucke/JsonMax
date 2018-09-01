@@ -5,18 +5,20 @@
 #ifndef JSONMAX_JSONPARSER_H
 #define JSONMAX_JSONPARSER_H
 
+#include <iostream>
 #include <stack>
 #include "JsonElement.h"
 #include "JsonObject.h"
+
 
 class JsonParser {
 public:
 
     static JsonElement parse(const std::string& json);
 
-    static int findIndex(int start, char symbol, const std::string& string);
+    static int findIndex(size_t start, char symbol, const std::string& string);
 
-    static int findEnding(int start, char symbol, const std::string& string);
+    static int findEnding(size_t start, char symbol, const std::string& string);
 
     static bool validateString(const std::string& string);
 
@@ -27,10 +29,6 @@ public:
     static JsonObject parseObject(const std::string& object);
 
     static JsonElement parseArray(const std::string& array);
-
-private:
-
-    std::stack<JsonElement> elementStack;
 
 };
 

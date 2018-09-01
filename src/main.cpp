@@ -27,11 +27,8 @@ int main() {
 //
 //    std::cout << restaurant.toString(4);
 
-//    int a =std::stod("3e4");
-//    std::cout << a;
-
-    JsonObject object = JsonParser::parse(R"({"key": "value", "person": {"name": "Max", "age": 19}})");
-    std::cout << object.toString(4);
+    std::string object = JsonParser::parse(R"("test")");
+    std::cout << object;
 
     return 0;
 }
