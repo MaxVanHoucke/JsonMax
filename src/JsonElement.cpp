@@ -19,13 +19,13 @@ std::string JsonElement::toString(unsigned int indent) const {
         case FRACTION:
             return std::to_string(fraction);
         case OBJECT:
-            return object->toString();
+            return object->toString(indent);
         case STRING:
             return "\"" + string + "\"";
         case ARRAY: {
             std::string arrayElements = "[";
             for (int i = 0; i < array.size(); i++) {
-                arrayElements += array[i].toString(indent);
+                arrayElements += array[i].toString();
                 if (i != array.size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
