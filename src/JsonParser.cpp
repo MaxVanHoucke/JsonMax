@@ -157,7 +157,7 @@ bool JsonParser::validateString(const std::string &string) {
         char symbol = string[i];
 
         if (escape) {
-            if (!(symbol == '"' or symbol == '\\'
+            if (not (symbol == '"' or symbol == '\\'
                   or symbol == '/' or symbol == 'b'
                   or symbol == 'f' or symbol == 'n'
                   or symbol == 'r' or symbol == 't'
@@ -175,8 +175,12 @@ bool JsonParser::validateString(const std::string &string) {
 
             escape = false;
         }
-        else if (symbol == '\\') escape = true;
-        else if (symbol == '\"') return false;
+        else if (symbol == '\\') {
+            escape = true;
+        }
+        else if (symbol == '\"') {
+            return false;
+        }
     }
     return true;
 }
