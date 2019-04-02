@@ -8,3 +8,4 @@
 - Derive from class to make object json deserializable
 - Single include
 - speed test
+- make any class serializable and deserializable
