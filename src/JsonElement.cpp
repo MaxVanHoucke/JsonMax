@@ -3,11 +3,11 @@
  */
 
 #include "../include/JsonElement.h"
-
 #include "../include/JsonObject.h"
+
 #include <math.h>
 
-JsonElement::JsonElement(): type(UNINITIALIZED) {}
+JsonElement::JsonElement() : type(UNINITIALIZED) {}
 
 std::string JsonElement::toString(unsigned int indent) const {
     switch (type) {
@@ -29,7 +29,7 @@ std::string JsonElement::toString(unsigned int indent) const {
                 if (i != array.size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
-            if (indent) return JsonObject::indent(arrayElements, indent);
+            if (indent) return Object::indent(arrayElements, indent);
             return arrayElements;
         }
         case JSON_NULL:
@@ -40,49 +40,47 @@ std::string JsonElement::toString(unsigned int indent) const {
 }
 
 
-JsonElement& JsonElement::operator=(int num) {
+JsonElement &JsonElement::operator=(int num) {
     setNumber(num);
     return *this;
 }
 
-JsonElement& JsonElement::operator=(double fract) {
-//    if (std::abs(std::round(fract) - fract) < )
-    setFraction(fract);
+JsonElement &JsonElement::operator=(double fraction) {
+    setFraction(fraction);
     return *this;
 }
 
-JsonElement& JsonElement::operator=(const JsonObject& obj) {
+JsonElement &JsonElement::operator=(const Object &obj) {
     setObject(obj);
     return *this;
 }
 
-JsonElement& JsonElement::operator=(const std::string &string) {
+JsonElement &JsonElement::operator=(const std::string &string) {
     setString(string);
     return *this;
 }
 
-JsonElement& JsonElement::operator=(const std::vector<JsonElement> &arr) {
+JsonElement &JsonElement::operator=(const std::vector<JsonElement> &arr) {
     setArray(arr);
     return *this;
 }
 
-JsonElement& JsonElement::operator=(bool boolean) {
+JsonElement &JsonElement::operator=(bool boolean) {
     setBoolean(boolean);
     return *this;
 }
 
-JsonElement& JsonElement::operator=(const char *c_string) {
+JsonElement &JsonElement::operator=(const char *c_string) {
     setString(c_string);
     return *this;
 }
 
-JsonElement& JsonElement::operator[](const char *c_string) {
+JsonElement &JsonElement::operator[](const char *c_string) {
     if (type == OBJECT) {
         return object->operator[](c_string);
     }
     throw JsonTypeException("Invalid use of operator[](const char*), element is not a json object.");
 }
-
 
 void JsonElement::setNumber(int number) {
     JsonElement::number = number;
@@ -99,8 +97,8 @@ void JsonElement::setFraction(double fraction) {
     type = FRACTION;
 }
 
-void JsonElement::setObject(JsonObject object) {
-    JsonElement::object = new JsonObject();
+void JsonElement::setObject(Object object) {
+    JsonElement::object = new Object();
     *JsonElement::object = object;
     type = OBJECT;
 }
@@ -113,10 +111,6 @@ void JsonElement::setString(const std::__cxx11::basic_string<char> &string) {
 void JsonElement::setArray(const std::vector<JsonElement> &array) {
     JsonElement::array = array;
     type = ARRAY;
-}
-
-void JsonElement::setNULL() {
-    type = JSON_NULL;
 }
 
 JsonElement::operator int() const {
@@ -134,7 +128,7 @@ JsonElement::operator std::string() const {
     return string;
 }
 
-JsonElement::operator const char*() const {
+JsonElement::operator const char *() const {
     checkType(STRING);
     return string.c_str();
 }
@@ -144,9 +138,9 @@ JsonElement::operator bool() const {
     return boolean;
 }
 
-JsonElement::operator JsonObject() const {
+JsonElement::operator Object() const {
     checkType(OBJECT);
-    return JsonObject() = *object;
+    return Object() = *object;
 }
 
 JsonElement::operator std::vector<JsonElement>() const {
@@ -184,7 +178,7 @@ JsonElement::JsonElement(bool boolean) {
     setBoolean(boolean);
 }
 
-JsonElement::JsonElement(const JsonObject &obj) {
+JsonElement::JsonElement(const Object &obj) {
     setObject(obj);
 }
 
@@ -192,16 +186,13 @@ JsonElement::JsonElement(const std::vector<JsonElement> &arr) {
     setArray(arr);
 }
 
-JsonElement& JsonElement::operator=(std::nullptr_t pointer) {
+JsonElement &JsonElement::operator=(std::nullptr_t pointer) {
     if (pointer == nullptr) {
         type = JSON_NULL;
-    }
-}
+    } else {
 
-JsonElement JsonElement::null() {
-    JsonElement element;
-    element.setNULL();
-    return element;
+    }
+    return *this;
 }
 
 JsonElement::JsonElement(std::nullptr_t pointer) {
@@ -214,11 +205,11 @@ JsonElement::JsonElement(const std::initializer_list<JsonElement> &arr) {
     setArray(arr);
 }
 
-JsonElement& JsonElement::operator=(const std::initializer_list<JsonElement> &arr) {
+JsonElement &JsonElement::operator=(const std::initializer_list<JsonElement> &arr) {
     setArray(arr);
 }
 
-std::ostream& operator<<(std::ostream& out, const JsonElement& element) {
+std::ostream &operator<<(std::ostream &out, const JsonElement &element) {
     std::string output = element.toString();
     if (!output.empty() and output.front() == '"' and output.back() == '"') {
         output.pop_back();
