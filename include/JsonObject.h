@@ -10,8 +10,7 @@
 #include <map>
 #include <unordered_map>
 
-#include "JsonElement.h"
-
+class JsonElement;
 
 class JsonObject {
 public:

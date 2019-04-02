@@ -6,3 +6,5 @@
 ### Upcoming features
 - Iteration of object
 - Derive from class to make object json deserializable
+- Single include
+- speed test

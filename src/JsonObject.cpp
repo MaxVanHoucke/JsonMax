@@ -3,6 +3,7 @@
  */
 
 #include "../include/JsonObject.h"
+#include "../include/JsonElement.h"
 
 JsonElement& JsonObject::operator[](const std::string &member) {
     for (const auto& elem: elements)

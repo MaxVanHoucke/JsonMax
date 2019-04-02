@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_EXE_LINKER_FLAGS -pthread)
 set(CMAKE_CXX_FLAGS:STRING=-fPIC)
 
-set(SOURCE_FILES src/main.cpp src/JsonObject.cpp src/JsonElement.cpp src/JsonParser.cpp)
+#set(SOURCE_FILES src/main.cpp src/JsonObject.cpp src/JsonElement.cpp src/JsonParser.cpp)
+set(SOURCE_FILES test.cpp)
 
 set(DEBUG_SOURCE_FILES  test/MainTest.cpp test/ValidateNumberTest.cpp test/ValidateStringTest.cpp
                         src/JsonParser.cpp src/JsonElement.cpp src/JsonObject.cpp)
