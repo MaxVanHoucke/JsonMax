@@ -3,13 +3,17 @@
  */
 
 #include "../include/JsonElement.h"
-#include "../include/JsonObject.h"
+#include "../include/Object.h"
+#include "../include/Exceptions.h"
+#include "../include/Tools.h"
 
 #include <math.h>
 
+using namespace JsonMax;
+
 JsonElement::JsonElement() : type(UNINITIALIZED) {}
 
-std::string JsonElement::toString(unsigned int indent) const {
+std::string JsonElement::toString(unsigned int ind) const {
     switch (type) {
         case INTEGER:
             return std::to_string(number);
@@ -19,7 +23,7 @@ std::string JsonElement::toString(unsigned int indent) const {
         case FRACTION:
             return std::to_string(fraction);
         case OBJECT:
-            return object->toString(indent);
+            return object->toString(ind);
         case STRING:
             return "\"" + string + "\"";
         case ARRAY: {
@@ -29,7 +33,7 @@ std::string JsonElement::toString(unsigned int indent) const {
                 if (i != array.size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
-            if (indent) return Object::indent(arrayElements, indent);
+            if (ind) return Tools::indent(arrayElements, ind);
             return arrayElements;
         }
         case JSON_NULL:
@@ -148,11 +152,11 @@ JsonElement::operator std::vector<JsonElement>() const {
     return array;
 }
 
-JsonElement::Type JsonElement::getType() const {
+Type JsonElement::getType() const {
     return type;
 }
 
-void JsonElement::checkType(JsonElement::Type castType) const {
+void JsonElement::checkType(Type castType) const {
     if (type != castType) {
         throw JsonTypeException(type, castType);
     }

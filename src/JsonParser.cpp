@@ -3,8 +3,11 @@
  */
 
 #include "../include/JsonParser.h"
+#include "../include/Exceptions.h"
 
-JsonElement parse(const std::string &json) {
+using namespace JsonMax;
+
+JsonElement JsonMax::parse(const std::string &json) {
     std::string element = JsonParser::trim(json);
 
     if (element == "true") {

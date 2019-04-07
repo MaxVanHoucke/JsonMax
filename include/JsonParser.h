@@ -8,46 +8,33 @@
 #include <iostream>
 #include <stack>
 #include "JsonElement.h"
-#include "JsonObject.h"
+#include "Object.h"
+
+namespace JsonMax {
+
+    JsonElement parse(const std::string &);
 
 
-JsonElement parse(const std::string&);
+    namespace JsonParser {
+
+        int findIndex(size_t start, char symbol, const std::string &string);
+
+        int findEnding(size_t start, char symbol, const std::string &string);
+
+        bool validateString(const std::string &string);
+
+        bool validateNumber(const std::string &number);
+
+        std::string trim(const std::string &string);
+
+        Object parseObject(const std::string &object);
+
+        JsonElement parseArray(const std::string &array);
+
+    };
+
+}
 
 
-class JsonParser {
-private:
-
-    friend JsonElement parse(const std::string&);
-
-    static int findIndex(size_t start, char symbol, const std::string &string);
-    static int findEnding(size_t start, char symbol, const std::string &string);
-
-    static bool validateString(const std::string &string);
-    static bool validateNumber(const std::string &number);
-
-    static std::string trim(const std::string &string);
-
-    static Object parseObject(const std::string &object);
-    static JsonElement parseArray(const std::string &array);
-
-};
-
-class JsonParsingException : public std::exception {
-public:
-
-    friend class JsonParser;
-    friend JsonElement parse(const std::string&);
-
-    virtual const char *what() const throw() {
-        return msg.c_str();
-    }
-
-protected:
-
-    JsonParsingException(const char *message) : msg(message) {}
-
-    std::string msg;
-
-};
 
 #endif //JSONMAX_JSONPARSER_H
