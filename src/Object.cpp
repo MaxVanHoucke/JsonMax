@@ -3,18 +3,18 @@
  */
 
 #include "../include/Object.h"
-#include "../include/JsonElement.h"
+#include "../include/Element.h"
 #include "../include/Tools.h"
 
 using namespace JsonMax;
 
-JsonElement &Object::operator[](const std::string &member) {
+Element &Object::operator[](const std::string &member) {
     for (const auto &elem: elements) {
         if (elem.first == member) {
             return *elem.second;
         }
     }
-    auto element = new JsonElement();
+    auto element = new Element();
     elements.emplace_back(member, element);
     return *element;
 }

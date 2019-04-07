@@ -3,7 +3,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../include/JsonParser.h"
+#include "../include/Parser.h"
 
 TEST(validateString, happyDay) {
 

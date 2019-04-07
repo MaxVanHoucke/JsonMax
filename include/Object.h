@@ -13,10 +13,14 @@
 
 namespace JsonMax {
 
-    class JsonElement;
+    class Element;
+    class Iterator;
 
     class Object {
     public:
+
+        friend class Iterator;
+        friend class Element;
 
         /**
          * Constructor
@@ -27,16 +31,17 @@ namespace JsonMax {
          * @param member
          * @return
          */
-        JsonElement &operator[](const std::string &member);
+        Element &operator[](const std::string &member);
 
         std::string toString(unsigned int indent = 0) const;
+
 
     private:
 
         /**
          * The elements of the object
          */
-        std::vector<std::pair<std::string, JsonElement *>> elements;
+        std::vector<std::pair<std::string, Element *>> elements;
 
     };
 

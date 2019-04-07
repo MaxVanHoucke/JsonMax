@@ -2,73 +2,91 @@
  * @author Max Van Houcke
  */
 
-#include "../include/JsonParser.h"
+#include "../include/Parser.h"
 #include "../include/Exceptions.h"
+
+#include <fstream>
+#include <sstream>
 
 using namespace JsonMax;
 
-JsonElement JsonMax::parse(const std::string &json) {
-    std::string element = JsonParser::trim(json);
+Element JsonMax::parse(const std::string &json) {
+    std::string element = Parser::trim(json);
 
     if (element == "true") {
-        return JsonElement(true);
+        return Element(true);
     } else if (element == "false") {
-        return JsonElement(false);
+        return Element(false);
     } else if (element == "null") {
-        return JsonElement(nullptr);
+        return Element(nullptr);
     }
 
-    JsonElement output;
+    Element output;
 
     if (element.empty()) {
-        return JsonElement();
+        return Element();
     }
 
     if (element[0] == '{') {
         if (element.back() != '}') {
-            throw JsonParsingException("Invalid Json: object does not end with '}'");
+            throw ParseException("Invalid Json: object does not end with '}'");
         }
-        return JsonParser::parseObject(element.substr(1, element.size() - 2));
+        return Parser::parseObject(element.substr(1, element.size() - 2));
     }
 
     if (element[0] == '[') {
         if (element.back() != ']') {
-            throw JsonParsingException("Invalid Json: array does not end with '}'");
+            throw ParseException("Invalid Json: array does not end with '}'");
         }
-        return JsonParser::parseArray(element.substr(1, element.size() - 2));
+        return Parser::parseArray(element.substr(1, element.size() - 2));
     }
 
-    if (JsonParser::validateNumber(element)) {
+    if (Parser::validateNumber(element)) {
         try {
             double number = std::stod(element);
             if (element.find('.') == std::string::npos) {
-                return JsonElement((int) number);
-            } else return JsonElement(number);
+                return Element((int) number);
+            } else return Element(number);
         } catch (std::out_of_range &e) {
-            throw JsonParsingException(
+            throw ParseException(
                     std::string("Cannot parse, number '" + element + "' is out of range.").c_str());
         } catch (std::invalid_argument &e) {
-            throw JsonParsingException(std::string("Invalid Json, number '" + element + "' is not valid.").c_str());
+            throw ParseException(std::string("Invalid Json, number '" + element + "' is not valid.").c_str());
         }
     }
 
     if (element[0] == '"') {
         if (element.back() != '"') {
-            throw JsonParsingException(std::string("Invalid Json, string " + element + " has no ending.").c_str());
+            throw ParseException(std::string("Invalid Json, string " + element + " has no ending.").c_str());
         }
-        if (!JsonParser::validateString(element.substr(1, element.size() - 2))) {
-            throw JsonParsingException(
+        if (!Parser::validateString(element.substr(1, element.size() - 2))) {
+            throw ParseException(
                     std::string("Invalid Json, string " + element + " is invalid as per Json rules.").c_str());
 
         }
-        return JsonElement(element.substr(1, element.size() - 2));
+        return Element(element.substr(1, element.size() - 2));
     }
 
-    throw JsonParsingException(
+    throw ParseException(
             std::string("Invalid Json, element " + element + " is not a supported type.").c_str());
 }
 
-int JsonParser::findIndex(size_t start, char symbol, const std::string &string) {
+
+Element JsonMax::parseFile(const std::string &fileName) {
+    std::ifstream in(fileName);
+
+    if (not in.good()) {
+        throw ParseException(std::string("Couldn't open " + fileName).c_str());
+    }
+
+    std::ostringstream stream;
+    stream << in.rdbuf();
+
+    return parse(stream.str());
+}
+
+
+int Parser::findIndex(size_t start, char symbol, const std::string &string) {
     bool skip = false;
     bool inString = false;
 
@@ -93,7 +111,7 @@ int JsonParser::findIndex(size_t start, char symbol, const std::string &string) 
     return -1;
 }
 
-bool JsonParser::validateNumber(const std::string &number) {
+bool Parser::validateNumber(const std::string &number) {
     unsigned int index = 0;
     bool valid = false;
 
@@ -151,7 +169,7 @@ bool JsonParser::validateNumber(const std::string &number) {
     }
 }
 
-bool JsonParser::validateString(const std::string &string) {
+bool Parser::validateString(const std::string &string) {
     bool escape = false;
 
     for (int i = 0; i < string.size(); i++) {
@@ -185,7 +203,7 @@ bool JsonParser::validateString(const std::string &string) {
     return true;
 }
 
-std::string JsonParser::trim(const std::string &str) {
+std::string Parser::trim(const std::string &str) {
     const auto strBegin = str.find_first_not_of(" \t\n");
     if (strBegin == std::string::npos) return "";
     const auto strEnd = str.find_last_not_of(" \t\n");
@@ -193,14 +211,14 @@ std::string JsonParser::trim(const std::string &str) {
     return str.substr(strBegin, strRange);
 }
 
-JsonElement JsonParser::parseArray(const std::string &array) {
+Element Parser::parseArray(const std::string &array) {
     std::string element = trim(array);
 
     if (element.empty()) {
-        return JsonElement(std::vector<JsonElement>());
+        return Element(std::vector<Element>());
     }
 
-    std::vector<JsonElement> jsonArray;
+    std::vector<Element> jsonArray;
 
     size_t index = 0;
     while (true) {
@@ -214,7 +232,7 @@ JsonElement JsonParser::parseArray(const std::string &array) {
         if (element[index] == '{') {
             int i = findEnding(index, '{', element);
             if (i == -1) {
-                throw JsonParsingException("Invalid Json: object does not end with '}'");
+                throw ParseException("Invalid Json: object does not end with '}'");
             }
 
             jsonArray.push_back(parse(element.substr(index, i - index + 1)));
@@ -222,7 +240,7 @@ JsonElement JsonParser::parseArray(const std::string &array) {
         } else if (element[index] == '[') {
             int i = findEnding(index, '[', element);
             if (i == -1) {
-                throw JsonParsingException("Invalid Json: array does not end with ']'");
+                throw ParseException("Invalid Json: array does not end with ']'");
             }
 
             jsonArray.push_back(parse(element.substr(index, i - index + 1)));
@@ -243,16 +261,16 @@ JsonElement JsonParser::parseArray(const std::string &array) {
             break;
         }
         if (element[index] != ',') {
-            throw JsonParsingException("Invalid Json: invalid characters after value");
+            throw ParseException("Invalid Json: invalid characters after value");
         }
 
         index++;
     }
 
-    return JsonElement(jsonArray);
+    return Element(jsonArray);
 }
 
-Object JsonParser::parseObject(const std::string &object) {
+Object Parser::parseObject(const std::string &object) {
     std::string element = trim(object);
 
     if (element.empty()) {
@@ -266,12 +284,12 @@ Object JsonParser::parseObject(const std::string &object) {
 
         index = element.find_first_not_of(" \t\n", index);
         if (index == std::string::npos or element[index] != '"') {
-            throw JsonParsingException(std::string("Invalid Json, key in object missing").c_str());
+            throw ParseException(std::string("Invalid Json, key in object missing").c_str());
         }
 
         int i = findIndex(index + 1, '"', element);
         if (i == -1) {
-            throw JsonParsingException(std::string("Invalid Json, key in object has no ending").c_str());
+            throw ParseException(std::string("Invalid Json, key in object has no ending").c_str());
         }
 
         std::string key = element.substr(index + 1, i - index - 1);
@@ -280,7 +298,7 @@ Object JsonParser::parseObject(const std::string &object) {
         index = element.find_first_not_of(" \t\n", index);
 
         if (index == std::string::npos or element[index] != ':') {
-            throw JsonParsingException(std::string("Invalid Json, no ':' between key and value").c_str());
+            throw ParseException(std::string("Invalid Json, no ':' between key and value").c_str());
         }
 
         index++;
@@ -288,13 +306,13 @@ Object JsonParser::parseObject(const std::string &object) {
         index = element.find_first_not_of(" \t\n", index);
 
         if (index == std::string::npos) {
-            throw JsonParsingException(std::string("Invalid Json, key without value.").c_str());
+            throw ParseException(std::string("Invalid Json, key without value.").c_str());
         }
 
         if (element[index] == '{') {
             int i = findEnding(index, '{', element);
             if (i == -1) {
-                throw JsonParsingException("Invalid Json: object does not end with '}'");
+                throw ParseException("Invalid Json: object does not end with '}'");
             }
 
             json[key] = parse(element.substr(index, i - index + 1));
@@ -302,7 +320,7 @@ Object JsonParser::parseObject(const std::string &object) {
         } else if (element[index] == '[') {
             int i = findEnding(index, '[', element);
             if (i == -1) {
-                throw JsonParsingException("Invalid Json: array does not end with ']'");
+                throw ParseException("Invalid Json: array does not end with ']'");
             }
 
             json[key] = parse(element.substr(index, i - index + 1));
@@ -324,7 +342,7 @@ Object JsonParser::parseObject(const std::string &object) {
             break;
         }
         if (element[index] != ',') {
-            throw JsonParsingException("Invalid Json: invalid characters after value");
+            throw ParseException("Invalid Json: invalid characters after value");
         }
 
         index++;
@@ -334,7 +352,7 @@ Object JsonParser::parseObject(const std::string &object) {
 }
 
 
-int JsonParser::findEnding(size_t start, char symbol, const std::string &string) {
+int Parser::findEnding(size_t start, char symbol, const std::string &string) {
     bool skip = false;
     bool inString = false;
 

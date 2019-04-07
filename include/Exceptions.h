@@ -6,18 +6,18 @@
 #define JSONMAX_EXCEPTIONS_H
 
 
-#include "JsonElement.h"
-#include "JsonParser.h"
+#include "Element.h"
+#include "Parser.h"
 #include "Type.h"
 
 
 namespace JsonMax {
 
 
-    class JsonTypeException : public std::exception {
+    class TypeException : public std::exception {
     public:
 
-        friend class JsonElement;
+        friend class Element;
 
         virtual const char *what() const throw() {
             return msg.c_str();
@@ -25,12 +25,12 @@ namespace JsonMax {
 
     protected:
 
-        JsonTypeException(Type actual, Type expected) {
+        TypeException(Type actual, Type expected) {
             msg = "Casting an element of type " + toString(actual) + " to " +
                   toString(expected) + " is not possible.";
         }
 
-        explicit JsonTypeException(const std::string &str) {
+        explicit TypeException(const std::string &str) {
             msg = str;
         }
 
@@ -39,12 +39,13 @@ namespace JsonMax {
     };
 
 
-    class JsonParsingException : public std::exception {
+    class ParseException : public std::exception {
     public:
 
-        friend JsonElement parse(const std::string &);
-        friend JsonElement JsonParser::parseArray(const std::string&);
-        friend Object JsonParser::parseObject(const std::string&);
+        friend Element parse(const std::string &);
+        friend Element parseFile(const std::string &);
+        friend Element Parser::parseArray(const std::string&);
+        friend Object Parser::parseObject(const std::string&);
 
         virtual const char *what() const throw() {
             return msg.c_str();
@@ -52,7 +53,7 @@ namespace JsonMax {
 
     protected:
 
-        JsonParsingException(const char *message) : msg(message) {}
+        ParseException(const char *message) : msg(message) {}
 
         std::string msg;
 

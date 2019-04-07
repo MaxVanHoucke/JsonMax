@@ -7,15 +7,16 @@
 
 #include <iostream>
 #include <stack>
-#include "JsonElement.h"
+#include "Element.h"
 #include "Object.h"
 
 namespace JsonMax {
 
-    JsonElement parse(const std::string &);
+    Element parse(const std::string& json);
 
+    Element parseFile(const std::string& fileName);
 
-    namespace JsonParser {
+    namespace Parser {
 
         int findIndex(size_t start, char symbol, const std::string &string);
 
@@ -29,7 +30,7 @@ namespace JsonMax {
 
         Object parseObject(const std::string &object);
 
-        JsonElement parseArray(const std::string &array);
+        Element parseArray(const std::string &array);
 
     };
 
