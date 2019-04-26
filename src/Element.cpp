@@ -87,7 +87,10 @@ Element &Element::operator=(const char *c_string) {
 }
 
 Element& Element::operator[](const std::string &str) {
-    return (*this)[str.c_str()];
+    if (type == OBJECT) {
+        return data.object->operator[](str);
+    }
+    throw TypeException("Invalid use of operator[](const char*), element is not a json object.");
 }
 
 void Element::setNumber(int number) {

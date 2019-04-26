@@ -16,6 +16,5 @@ set(DEBUG_SOURCE_FILES test/test.cpp test/ValidateNumberTest.cpp test/ValidateSt
 
 add_executable(JsonMax ${SOURCE_FILES})
 add_executable(JsonMaxTest ${DEBUG_SOURCE_FILES})
-add_executable(SingleIncluder SingleIncluder.cpp)
 
 target_link_libraries(JsonMaxTest gtest)
