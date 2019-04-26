@@ -1,4 +1,4 @@
-## JsonMax
+## JsonMax &nbsp; [![Build Status](https://travis-ci.com/MaxVanHoucke/JsonMax.svg?token=h6oBgPcMpoopU8fjW1uH&branch=master)](https://travis-ci.com/MaxVanHoucke/JsonMax)
 
 ### A lightweight Json serializer/deserializer and data type for C++
 
