@@ -9,6 +9,7 @@
 
 namespace JsonMax {
 
+    /// Possible types of a JSON Element
     enum Type {
         INTEGER,
         BOOLEAN,
@@ -20,6 +21,7 @@ namespace JsonMax {
         UNINITIALIZED
     };
 
+    /// REturns string representation of a type
     std::string toString(Type type);
 
 }

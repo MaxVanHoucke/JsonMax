@@ -12,6 +12,7 @@ namespace JsonMax {
 
     namespace Tools {
 
+        /// Indents the given string with the given indentation (in spaces)
         std::string indent(const std::string &json, int indentation);
 
     }
