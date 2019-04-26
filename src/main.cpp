@@ -8,16 +8,14 @@
 using namespace JsonMax;
 
 
-
-
 int main(int argc, char** argv) {
 
 
-    Object restaurant(Object::VECTOR);
+    Object restaurant(Object::MAP);
 
     restaurant["name"] = "Cosmo";
     restaurant["opening date"] = 2007;
-    restaurant["owner"] = Object(Object::VECTOR);
+    restaurant["owner"] = Object();
     restaurant["owner"]["name"] = "Max";
     restaurant["owner"]["money"] = 1;
     restaurant["food"] = {"Pizza", "Pasta", "Seafood"};
@@ -27,17 +25,6 @@ int main(int argc, char** argv) {
 //    std::ofstream out("resto.json");
 //    out << restaurant.toString(4) << std::endl;
 //    out.close();
-
-/*
-    std::string name = restaurant["name"].getString();
-    Object obj = restaurant["owner"].getObject();
-    for (auto elem: obj) {
-        if (elem.key == "money") {
-
-        }
-    }
-*/
-
 
 //    Object pizza;
 //    pizza["title"] = "Margherita";

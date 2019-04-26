@@ -12,6 +12,6 @@ const std::string& Pair::getKey() const {
     return key;
 }
 
-Element& Pair::getValue() {
+const Element& Pair::getValue() const {
     return value;
 }

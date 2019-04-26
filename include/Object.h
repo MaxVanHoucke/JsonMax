@@ -33,12 +33,10 @@ namespace JsonMax {
         explicit Object(Storage storage = HASHMAP);
 
         Object(const Object&);
-        Object(Object&&);
+        Object(Object&&) noexcept;
 
         Object& operator=(const Object&);
-        Object& operator=(Object&&);
-
-
+        Object& operator=(Object&&) noexcept;
 
         ~Object();
 
@@ -52,8 +50,15 @@ namespace JsonMax {
 
         void remove(const std::string&);
 
-        std::vector<Pair> getPairs() const;
+        std::vector<Pair> pairs() const;
 
+        size_t size() const;
+
+        bool exists(const std::string&) const;
+
+        bool empty() const;
+
+        void clear();
 
     private:
 
@@ -67,9 +72,9 @@ namespace JsonMax {
 
 
         union Data {
-            std::vector<Pair>* elementsVector;
-            std::map<std::string, Element*>* elementsMap;
-            std::unordered_map<std::string, Element*>* elementsHashmap;
+            std::vector<std::pair<std::string, Element>>* elementsVector;
+            std::map<std::string, Element>* elementsMap;
+            std::unordered_map<std::string, Element>* elementsHashmap;
         };
 
         Data data;

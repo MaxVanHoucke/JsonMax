@@ -4,14 +4,8 @@
 
 
 ### Upcoming features
-- Iteration of object
 - Derive from class to make object json deserializable
 - Single include
 - speed test
 - make any class serializable and deserializable
-- remove element
-- size, empty, clear, exists(str), append
-- union
-- memory and speed increases
-- template getter
 - easy type checking functions

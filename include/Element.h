@@ -41,10 +41,10 @@ namespace JsonMax {
         Element(std::nullptr_t pointer);
 
         Element(const Element&);
-        Element(Element&&);
+        Element(Element&&) noexcept;
 
         Element& operator=(const Element&);
-        Element& operator=(Element&&);
+        Element& operator=(Element&&) noexcept;
 
         ~Element();
 

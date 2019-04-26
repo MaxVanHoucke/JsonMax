@@ -17,7 +17,7 @@ namespace JsonMax {
 
         const std::string &getKey() const;
 
-        Element &getValue();
+        const Element &getValue() const;
 
     private:
 

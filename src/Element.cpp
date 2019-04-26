@@ -293,11 +293,11 @@ Element::Element(const JsonMax::Element &obj) {
     copy(obj);
 }
 
-Element::Element(JsonMax::Element &&obj) {
+Element::Element(JsonMax::Element &&obj) noexcept {
     move(std::move(obj));
 }
 
-Element& Element::operator=(JsonMax::Element &&obj) {
+Element& Element::operator=(JsonMax::Element &&obj) noexcept {
     if (this != &obj) {
         reset();
         move(std::move(obj));
