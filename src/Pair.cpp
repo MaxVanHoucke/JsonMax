@@ -2,11 +2,11 @@
  * @author Max Van Houcke
  */
 
-#include "../include/Pair.h"
+#include "Pair.h"
 
 using namespace JsonMax;
 
-Pair::Pair(const std::string &str, const JsonMax::Element &ele): key(str), value(ele) {}
+Pair::Pair(std::string str, JsonMax::Element ele): key(std::move(str)), value(std::move(ele)) {}
 
 const std::string& Pair::getKey() const {
     return key;

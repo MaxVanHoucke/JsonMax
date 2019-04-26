@@ -2,7 +2,7 @@
  * @author Max Van Houcke
  */
 
-#include "../include/Type.h"
+#include "Type.h"
 
 using namespace JsonMax;
 

@@ -2,10 +2,10 @@
  * @author Max Van Houcke
  */
 
-#include "../include/Object.h"
-#include "../include/Element.h"
-#include "../include/Tools.h"
-#include "../include/Pair.h"
+#include "Object.h"
+#include "Element.h"
+#include "Tools.h"
+#include "Pair.h"
 
 using namespace JsonMax;
 

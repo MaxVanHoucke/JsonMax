@@ -2,8 +2,8 @@
  * @author Max Van Houcke
  */
 
-#include "../include/Parser.h"
-#include "../include/Exceptions.h"
+#include "Parser.h"
+#include "Exceptions.h"
 
 #include <fstream>
 #include <sstream>

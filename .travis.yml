@@ -1,0 +1,9 @@
+dist: trusty
+language: cpp
+compiler: gcc
+
+script:
+  - mkdir build
+  - cmake ..
+  - make all
+  - ./JsonMaxTests

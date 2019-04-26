@@ -2,10 +2,10 @@
  * @author Max Van Houcke
  */
 
-#include "../include/Element.h"
-#include "../include/Object.h"
-#include "../include/Exceptions.h"
-#include "../include/Tools.h"
+#include "Element.h"
+#include "Object.h"
+#include "Exceptions.h"
+#include "Tools.h"
 
 #include <math.h>
 

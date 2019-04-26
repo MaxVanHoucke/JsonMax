@@ -1,10 +1,7 @@
 /**
- * @author Max Van Houcke
+ * Main test file, catch configures a main function with the below define
  */
 
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include "catch.h"
 
-int main(int argc, char **argv){
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

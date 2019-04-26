@@ -15,7 +15,7 @@ namespace JsonMax {
     public:
 
         /// Constructor with key and value
-        Pair(const std::string &, const Element &);
+        Pair(std::string , Element);
 
         /// Getter for key
         const std::string &getKey() const;

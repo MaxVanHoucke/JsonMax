@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-
 #include "Type.h"
 
 namespace JsonMax {

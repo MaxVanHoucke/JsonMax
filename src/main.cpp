@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "../include/Object.h"
-#include "../include/Parser.h"
-#include "../include/Exceptions.h"
+#include "Object.h"
+#include "Parser.h"
+#include "Exceptions.h"
 
 using namespace JsonMax;
 

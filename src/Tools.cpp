@@ -2,7 +2,7 @@
  * @author Max Van Houcke
  */
 
-#include "../include/Tools.h"
+#include "Tools.h"
 
 std::string JsonMax::Tools::indent(const std::string &json, int indentation) {
     std::string output;

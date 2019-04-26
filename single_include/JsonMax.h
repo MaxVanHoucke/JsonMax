@@ -6,9 +6,49 @@
 #define JSONMAX_JSONMAX_H
 
 #include <string>
+"bits/c++config.h"
+"bits/stringfwd.h"
+"bits/char_traits.h"
+"bits/allocator.h"
+"bits/cpp_type_traits.h"
+"bits/localefwd.h"
+"bits/ostream_insert.h"
+"bits/stl_iterator_base_types.h"
+"bits/stl_iterator_base_funcs.h"
+"bits/stl_iterator.h"
+"bits/stl_function.h"
+"ext/numeric_traits.h"
+"bits/stl_algobase.h"
+"bits/range_access.h"
+"bits/basic_string.h"
+"bits/basic_string.tcc"
 #include <vector>
+"bits/stl_algobase.h"
+"bits/allocator.h"
+"bits/stl_construct.h"
+"bits/stl_uninitialized.h"
+"bits/stl_vector.h"
+"bits/stl_bvector.h"
+"bits/range_access.h"
+"bits/vector.tcc"
 #include <map>
+"bits/stl_tree.h"
+"bits/stl_map.h"
+"bits/stl_multimap.h"
+"bits/range_access.h"
 #include <unordered_map>
+"bits/range_access.h"
+"bits/range_access.h"
+"bits/range_access.h"
+"bits/range_access.h"
+"bits/allocator.h"
+"ext/alloc_traits.h"
+"ext/aligned_buffer.h"
+"bits/stl_function.h"
+"bits/functional_hash.h"
+"bits/hashtable.h"
+"bits/unordered_map.h"
+"bits/range_access.h"
 
 namespace JsonMax {
 

@@ -3,7 +3,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../include/Parser.h"
+#include "../src/Parser.h"
 
 TEST(validateString, happyDay) {
 

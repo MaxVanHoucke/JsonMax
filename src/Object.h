@@ -10,6 +10,7 @@
 #include <map>
 #include <unordered_map>
 
+
 namespace JsonMax {
 
     /// Forward declarations
