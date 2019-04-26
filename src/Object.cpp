@@ -9,7 +9,7 @@
 
 using namespace JsonMax;
 
-Object::Object(JsonMax::Object::Storage _storage): storage(_storage) {
+Object::Object(JsonMax::Storage _storage): storage(_storage) {
     switch (storage) {
         case HASHMAP: 
             data.elementsHashmap = new std::unordered_map<std::string, Element>();
@@ -216,6 +216,7 @@ size_t Object::size() const {
     } else if (storage == HASHMAP) {
         return data.elementsHashmap->size();
     }
+    return 0;
 }
 
 bool Object::exists(const std::string &key) const {
@@ -231,6 +232,7 @@ bool Object::exists(const std::string &key) const {
     } else if (storage == HASHMAP) {
         return data.elementsHashmap->count(key) && data.elementsHashmap->operator[](key).getType() != UNINITIALIZED;
     }
+    return false;
 }
 
 bool Object::empty() const {
@@ -256,6 +258,7 @@ bool Object::empty() const {
         }
         return true;
     }
+    return true;
 }
 
 void Object::clear() {

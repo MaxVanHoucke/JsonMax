@@ -16,21 +16,21 @@ Element::Element() : type(UNINITIALIZED) {}
 std::string Element::toString(unsigned int ind) const {
     switch (type) {
         case INTEGER:
-            return std::to_string(*storage.number);
+            return std::to_string(*data.number);
         case BOOLEAN:
-            if (storage.boolean) return "true";
+            if (data.boolean) return "true";
             else return "false";
         case FRACTION:
-            return std::to_string(*storage.fraction);
+            return std::to_string(*data.fraction);
         case OBJECT:
-            return storage.object->toString(ind);
+            return data.object->toString(ind);
         case STRING:
-            return "\"" + *storage.string + "\"";
+            return "\"" + *data.string + "\"";
         case ARRAY: {
             std::string arrayElements = "[";
-            for (size_t i = 0; i < storage.array->size(); i++) {
-                arrayElements += storage.array->at(i).toString();
-                if (i != storage.array->size() - 1) arrayElements += ", ";
+            for (size_t i = 0; i < data.array->size(); i++) {
+                arrayElements += data.array->at(i).toString();
+                if (i != data.array->size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
             if (ind) return Tools::indent(arrayElements, ind);
@@ -88,8 +88,7 @@ Element &Element::operator=(const char *c_string) {
 
 Element &Element::operator[](const char *c_string) {
     if (type == OBJECT) {
-        std::cout << "no pro" << std::endl;
-        return storage.object->operator[](c_string);
+        return data.object->operator[](c_string);
     }
     throw TypeException("Invalid use of operator[](const char*), element is not a json object.");
 }
@@ -99,63 +98,63 @@ Element& Element::operator[](const std::string &str) {
 }
 
 void Element::setNumber(int number) {
-    Element::storage.number = new int(number);
+    Element::data.number = new int(number);
     type = INTEGER;
 }
 
 void Element::setBoolean(bool boolean) {
-    Element::storage.boolean = boolean;
+    Element::data.boolean = boolean;
     type = BOOLEAN;
 }
 
 void Element::setFraction(double fraction) {
-    Element::storage.fraction = new double(fraction);
+    Element::data.fraction = new double(fraction);
     type = FRACTION;
 }
 
 void Element::setObject(const Object& object) {
-    Element::storage.object = new Object(object);
+    Element::data.object = new Object(object);
     type = OBJECT;
 }
 
 void Element::setString(const std::__cxx11::basic_string<char> &string) {
-    Element::storage.string = new std::string(string);
+    Element::data.string = new std::string(string);
     type = STRING;
 }
 
 void Element::setArray(const std::vector<Element> &array) {
-    Element::storage.array = new std::vector<Element>(array);
+    Element::data.array = new std::vector<Element>(array);
     type = ARRAY;
 }
 
 int Element::getInt() const {
     checkType(INTEGER);
-    return *storage.number;
+    return *data.number;
 }
 
 double Element::getDouble() const {
     checkType(FRACTION);
-    return *storage.fraction;
+    return *data.fraction;
 }
 
 std::string& Element::getString() const {
     checkType(STRING);
-    return *storage.string;
+    return *data.string;
 }
 
 bool Element::getBool() const {
     checkType(BOOLEAN);
-    return storage.boolean;
+    return data.boolean;
 }
 
 Object& Element::getObject() const {
     checkType(OBJECT);
-    return *storage.object;
+    return *data.object;
 }
 
 Array& Element::getArray() const {
     checkType(ARRAY);
-    return *storage.array;
+    return *data.array;
 }
 
 Type Element::getType() const {
@@ -222,15 +221,15 @@ Element &Element::operator=(const std::initializer_list<Element> &arr) {
 
 void Element::reset() {
     switch (type) {
-        case INTEGER: delete storage.number;
+        case INTEGER: delete data.number;
             break;
-        case FRACTION: delete storage.fraction;
+        case FRACTION: delete data.fraction;
             break;
-        case OBJECT: delete storage.object;
+        case OBJECT: delete data.object;
             break;
-        case STRING: delete storage.string;
+        case STRING: delete data.string;
             break;
-        case ARRAY: delete storage.array;
+        case ARRAY: delete data.array;
             break;
         default:
             break;
@@ -246,17 +245,17 @@ Element::~Element() {
 void Element::copy(const JsonMax::Element &obj) {
     type = obj.type;
     switch (type) {
-        case INTEGER: storage.number = new int(*obj.storage.number);
+        case INTEGER: data.number = new int(*obj.data.number);
             break;
-        case FRACTION: storage.fraction = new double(*obj.storage.fraction);
+        case FRACTION: data.fraction = new double(*obj.data.fraction);
             break;
-        case STRING: storage.string = new std::string(*obj.storage.string);
+        case STRING: data.string = new std::string(*obj.data.string);
             break;
-        case OBJECT: storage.object = new Object(*obj.storage.object);
+        case OBJECT: data.object = new Object(*obj.data.object);
             break;
-        case ARRAY: storage.array = new Array(*obj.storage.array);
+        case ARRAY: data.array = new Array(*obj.data.array);
             break;
-        case BOOLEAN: storage.boolean = obj.storage.boolean;
+        case BOOLEAN: data.boolean = obj.data.boolean;
             break;
         default:
             break;
@@ -266,22 +265,22 @@ void Element::copy(const JsonMax::Element &obj) {
 void Element::move(JsonMax::Element &&obj) {
     type = obj.type;
     switch (type) {
-        case INTEGER: storage.number = obj.storage.number;
-            obj.storage.number = nullptr;
+        case INTEGER: data.number = obj.data.number;
+            obj.data.number = nullptr;
             break;
-        case FRACTION: storage.fraction = obj.storage.fraction;
-            obj.storage.fraction = nullptr;
+        case FRACTION: data.fraction = obj.data.fraction;
+            obj.data.fraction = nullptr;
             break;
-        case STRING: storage.string = obj.storage.string;
-            obj.storage.string = nullptr;
+        case STRING: data.string = obj.data.string;
+            obj.data.string = nullptr;
             break;
-        case OBJECT: storage.object = obj.storage.object;
-            obj.storage.object = nullptr;
+        case OBJECT: data.object = obj.data.object;
+            obj.data.object = nullptr;
             break;
-        case ARRAY: storage.array = obj.storage.array;
-            obj.storage.array = nullptr;
+        case ARRAY: data.array = obj.data.array;
+            obj.data.array = nullptr;
             break;
-        case BOOLEAN: storage.boolean = obj.storage.boolean;
+        case BOOLEAN: data.boolean = obj.data.boolean;
             break;
         default:
             break;

@@ -11,7 +11,7 @@ using namespace JsonMax;
 int main(int argc, char** argv) {
 
 
-    Object restaurant(Object::MAP);
+    Object restaurant(MAP);
 
     restaurant["name"] = "Cosmo";
     restaurant["opening date"] = 2007;

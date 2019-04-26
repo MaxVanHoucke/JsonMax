@@ -30,6 +30,10 @@ namespace JsonMax {
          */
 
         Element();
+
+        Element(const Element&);
+        Element(Element&&) noexcept;
+
         Element(const std::string &string);
         Element(const char *old_string);
         Element(int num);
@@ -40,17 +44,12 @@ namespace JsonMax {
         Element(const std::initializer_list<Element> &arr);
         Element(std::nullptr_t pointer);
 
-        Element(const Element&);
-        Element(Element&&) noexcept;
+
 
         Element& operator=(const Element&);
         Element& operator=(Element&&) noexcept;
 
         ~Element();
-
-        void move(Element&&);
-        void copy(const Element&);
-
 
         /**
          * Operator=
@@ -79,6 +78,9 @@ namespace JsonMax {
 
     private:
 
+        void move(Element&&);
+        void copy(const Element&);
+
         void reset();
         void checkType(Type castType) const;
 
@@ -91,7 +93,7 @@ namespace JsonMax {
 
         Type type;
 
-        union Storage {
+        union Data {
             int* number;
             bool boolean;
             double* fraction;
@@ -100,7 +102,7 @@ namespace JsonMax {
             Array* array;
         };
 
-        Storage storage;
+        Data data;
 
     };
 
