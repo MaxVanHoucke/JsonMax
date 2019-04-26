@@ -14,6 +14,7 @@
 namespace JsonMax {
 
     class Element;
+    class Pair;
 
     class Object {
     public:
@@ -51,6 +52,8 @@ namespace JsonMax {
 
         void remove(const std::string&);
 
+        std::vector<Pair> getPairs() const;
+
 
     private:
 
@@ -64,7 +67,7 @@ namespace JsonMax {
 
 
         union Data {
-            std::vector<std::pair<std::string, Element>>* elementsVector;
+            std::vector<Pair>* elementsVector;
             std::map<std::string, Element*>* elementsMap;
             std::unordered_map<std::string, Element*>* elementsHashmap;
         };

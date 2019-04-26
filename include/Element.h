@@ -48,6 +48,9 @@ namespace JsonMax {
 
         ~Element();
 
+        void move(Element&&);
+        void copy(const Element&);
+
 
         /**
          * Operator=

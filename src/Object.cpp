@@ -5,6 +5,7 @@
 #include "../include/Object.h"
 #include "../include/Element.h"
 #include "../include/Tools.h"
+#include "../include/Pair.h"
 
 using namespace JsonMax;
 
@@ -17,7 +18,7 @@ Object::Object(JsonMax::Object::Storage _storage): storage(_storage) {
             data.elementsMap = new std::map<std::string, Element*>();
             break;
         case VECTOR:
-            data.elementsVector = new std::vector<std::pair<std::string, Element>>();
+            data.elementsVector = new std::vector<Pair>();
             break;
     }
 }
@@ -70,7 +71,7 @@ void Object::copy(const JsonMax::Object &obj) {
             data.elementsMap = new std::map<std::string, Element*>(*obj.data.elementsMap);
             break;
         case VECTOR:
-            data.elementsVector = new std::vector<std::pair<std::string, Element>>(*obj.data.elementsVector);
+            data.elementsVector = new std::vector<Pair>(*obj.data.elementsVector);
             break;
     }
 }
@@ -103,21 +104,21 @@ Object& Object::operator=(JsonMax::Object &&obj) {
 
 Element &Object::operator[](const std::string &member) {
     for (auto &elem: *data.elementsVector) {
-        if (elem.first == member) {
-            return elem.second;
+        if (elem.getKey() == member) {
+            return elem.getValue();
         }
     }
     data.elementsVector->emplace_back(member, Element());
-    return data.elementsVector->back().second;
+    return data.elementsVector->back().getValue();
 }
 
 std::string Object::toString(unsigned int ind) const {
     std::string output = "{";
-    for (const auto &elem: *data.elementsVector) {
-        if (elem.second.getType() == Type::UNINITIALIZED) {
+    for (auto &elem: *data.elementsVector) {
+        if (elem.getValue().getType() == Type::UNINITIALIZED) {
             continue;
         }
-        output += "\"" + elem.first + "\": " + elem.second.toString(0) + ", ";
+        output += "\"" + elem.getKey() + "\": " + elem.getValue().toString(0) + ", ";
     }
     if (output.size() > 2) {
         output.pop_back();

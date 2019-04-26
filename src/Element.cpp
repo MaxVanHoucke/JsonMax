@@ -226,7 +226,7 @@ void Element::reset() {
             break;
         case FRACTION: delete storage.fraction;
             break;
-        case OBJECT: delete storage.string;
+        case OBJECT: delete storage.object;
             break;
         case STRING: delete storage.string;
             break;
@@ -242,3 +242,73 @@ Element::~Element() {
     reset();
 }
 
+
+void Element::copy(const JsonMax::Element &obj) {
+    type = obj.type;
+    switch (type) {
+        case INTEGER: storage.number = new int(*obj.storage.number);
+            break;
+        case FRACTION: storage.fraction = new double(*obj.storage.fraction);
+            break;
+        case STRING: storage.string = new std::string(*obj.storage.string);
+            break;
+        case OBJECT: storage.object = new Object(*obj.storage.object);
+            break;
+        case ARRAY: storage.array = new Array(*obj.storage.array);
+            break;
+        case BOOLEAN: storage.boolean = obj.storage.boolean;
+            break;
+        default:
+            break;
+    }
+}
+
+void Element::move(JsonMax::Element &&obj) {
+    type = obj.type;
+    switch (type) {
+        case INTEGER: storage.number = obj.storage.number;
+            obj.storage.number = nullptr;
+            break;
+        case FRACTION: storage.fraction = obj.storage.fraction;
+            obj.storage.fraction = nullptr;
+            break;
+        case STRING: storage.string = obj.storage.string;
+            obj.storage.string = nullptr;
+            break;
+        case OBJECT: storage.object = obj.storage.object;
+            obj.storage.object = nullptr;
+            break;
+        case ARRAY: storage.array = obj.storage.array;
+            obj.storage.array = nullptr;
+            break;
+        case BOOLEAN: storage.boolean = obj.storage.boolean;
+            break;
+        default:
+            break;
+    }
+}
+
+
+Element::Element(const JsonMax::Element &obj) {
+    copy(obj);
+}
+
+Element::Element(JsonMax::Element &&obj) {
+    move(std::move(obj));
+}
+
+Element& Element::operator=(JsonMax::Element &&obj) {
+    if (this != &obj) {
+        reset();
+        move(std::move(obj));
+    }
+    return *this;
+}
+
+Element& Element::operator=(const JsonMax::Element &obj) {
+    if (this != &obj) {
+        reset();
+        copy(obj);
+    }
+    return *this;
+}

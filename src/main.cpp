@@ -8,24 +8,9 @@
 using namespace JsonMax;
 
 
-class A {
-public:
-
-    std::string getR() {return a;}
-    std::string& getV() {return a;}
-
-    std::string a;
-
-};
 
 
 int main(int argc, char** argv) {
-
-    A a;
-    a.a = 3;
-
-    std::string& b = a.getV();
-
 
 
     Object restaurant(Object::VECTOR);
@@ -37,7 +22,7 @@ int main(int argc, char** argv) {
     restaurant["owner"]["money"] = 1;
     restaurant["food"] = {"Pizza", "Pasta", "Seafood"};
 
-//    std::cout << restaurant.toString();
+    std::cout << restaurant.toString();
 
 //    std::ofstream out("resto.json");
 //    out << restaurant.toString(4) << std::endl;
