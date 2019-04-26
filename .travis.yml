@@ -4,6 +4,8 @@ compiler: gcc
 
 script:
   - mkdir build
+  - cd build
   - cmake ..
   - make all
+  - cd test
   - ./JsonMaxTests
