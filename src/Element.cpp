@@ -113,7 +113,7 @@ void Element::setObject(const Object& object) {
     type = OBJECT;
 }
 
-void Element::setString(const std::__cxx11::basic_string<char> &string) {
+void Element::setString(const std::string &string) {
     Element::data.string = new std::string(string);
     type = STRING;
 }
