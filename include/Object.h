@@ -23,9 +23,7 @@ namespace JsonMax {
         VECTOR
     };
 
-    /**
-     * JSON Object representation
-     */
+    /// JSON Object representation
     class Object {
     public:
 
@@ -49,14 +47,14 @@ namespace JsonMax {
         Object(Object&&) noexcept;
 
         /**
-         * Copy operator=
+         * Copy assignment
          * Resets the current object
          * Deep copies all elements and uses the same storage type
          */
         Object& operator=(const Object&);
 
         /**
-         * Move operator=
+         * Move assignment
          * Resets the current object
          * Moves the complete storage from the temp object
          */
@@ -94,41 +92,27 @@ namespace JsonMax {
          */
         std::vector<Pair> pairs() const;
 
-        /**
-         * @return amount of items in the object
-         */
+        /// @return amount of items in the object
         size_t size() const;
 
-        /**
-         * @return true if the item with the given key exists
-         */
+        /// @return true if the item with the given key exists
         bool exists(const std::string&) const;
 
-        /**
-         * @return true if the object is empty
-         */
+        /// @return true if the object is empty
         bool empty() const;
 
-        /**
-         * Clears all items from the object
-         */
+        /// Clears all items from the object
         void clear();
 
     private:
 
-        /**
-         * Cleans up resources
-         */
+        /// Cleans up resources
         void reset();
 
-        /**
-         * Moves the given temp object to this
-         */
+        /// Moves the given temp object to this
         void move(Object&&);
 
-        /**
-         * Deep copies the given object to this
-         */
+        /// Deep copies the given object to this
         void copy(const Object&);
 
         /// Union with pointer to the different kinds of storage types

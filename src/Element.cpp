@@ -86,13 +86,6 @@ Element &Element::operator=(const char *c_string) {
     return *this;
 }
 
-Element &Element::operator[](const char *c_string) {
-    if (type == OBJECT) {
-        return data.object->operator[](c_string);
-    }
-    throw TypeException("Invalid use of operator[](const char*), element is not a json object.");
-}
-
 Element& Element::operator[](const std::string &str) {
     return (*this)[str.c_str()];
 }
