@@ -8,23 +8,22 @@
 #include <string>
 #include <vector>
 
-#include "Iterator.h"
 #include "Type.h"
 
 namespace JsonMax {
 
     class Object;
+    class Element;
+    using Array = std::vector<Element>;
 
     class Element {
     public:
 
-        Iterator begin();
-        Iterator end();
 
         Type getType() const;
         Element &operator[](const char *c_string);
+        Element &operator[](const std::string&);
         std::string toString(unsigned int indent = 0) const;
-
 
         /**
          * Constructors
@@ -37,9 +36,18 @@ namespace JsonMax {
         Element(double fraction);
         Element(bool boolean);
         Element(const Object &obj);
-        Element(const std::vector<Element> &arr);
+        Element(const Array &arr);
         Element(const std::initializer_list<Element> &arr);
         Element(std::nullptr_t pointer);
+
+        Element(const Element&);
+        Element(Element&&);
+
+        Element& operator=(const Element&);
+        Element& operator=(Element&&);
+
+        ~Element();
+
 
         /**
          * Operator=
@@ -51,7 +59,7 @@ namespace JsonMax {
         Element &operator=(double fract);
         Element &operator=(bool boolean);
         Element &operator=(const Object &obj);
-        Element &operator=(const std::vector<Element> &arr);
+        Element &operator=(const Array &arr);
         Element &operator=(const std::initializer_list<Element> &arr);
         Element &operator=(std::nullptr_t pointer);
 
@@ -59,33 +67,37 @@ namespace JsonMax {
          * Type operators
          */
 
-        operator int() const;
-        operator bool() const;
-        operator double() const;
-        operator Object() const;
-        operator std::string() const;
-        operator const char *() const;
-        operator std::vector<Element>() const;
+        int getInt() const;
+        bool getBool() const;
+        double getDouble() const;
+        std::string& getString() const;
+        Object& getObject() const;
+        Array& getArray() const;
 
     private:
 
+        void reset();
         void checkType(Type castType) const;
 
         void setNumber(int number);
         void setBoolean(bool boolean);
         void setFraction(double fraction);
-        void setObject(Object object);
-        void setString(const std::string &string);
-        void setArray(const std::vector<Element> &array);
+        void setObject(const Object& object);
+        void setString(const std::string& string);
+        void setArray(const Array& array);
 
         Type type;
 
-        int number;
-        bool boolean;
-        double fraction;
-        Object *object;
-        std::string string;
-        std::vector<Element> array;
+        union Storage {
+            int* number;
+            bool boolean;
+            double* fraction;
+            Object* object;
+            std::string* string;
+            Array* array;
+        };
+
+        Storage storage;
 
     };
 

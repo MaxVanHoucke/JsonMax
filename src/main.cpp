@@ -7,22 +7,52 @@
 
 using namespace JsonMax;
 
+
+class A {
+public:
+
+    std::string getR() {return a;}
+    std::string& getV() {return a;}
+
+    std::string a;
+
+};
+
+
 int main(int argc, char** argv) {
 
-    Object restaurant;
+    A a;
+    a.a = 3;
+
+    std::string& b = a.getV();
+
+
+
+    Object restaurant(Object::VECTOR);
 
     restaurant["name"] = "Cosmo";
     restaurant["opening date"] = 2007;
-    restaurant["owner"] = Object();
+    restaurant["owner"] = Object(Object::VECTOR);
     restaurant["owner"]["name"] = "Max";
     restaurant["owner"]["money"] = 1;
     restaurant["food"] = {"Pizza", "Pasta", "Seafood"};
 
+//    std::cout << restaurant.toString();
 
+//    std::ofstream out("resto.json");
+//    out << restaurant.toString(4) << std::endl;
+//    out.close();
 
-    for (const Element& elem: restaurant["owner"]) {
-        std::cout << elem.toString(4) << std::endl;
+/*
+    std::string name = restaurant["name"].getString();
+    Object obj = restaurant["owner"].getObject();
+    for (auto elem: obj) {
+        if (elem.key == "money") {
+
+        }
     }
+*/
+
 
 //    Object pizza;
 //    pizza["title"] = "Margherita";

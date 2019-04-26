@@ -14,18 +14,32 @@
 namespace JsonMax {
 
     class Element;
-    class Iterator;
 
     class Object {
     public:
 
-        friend class Iterator;
         friend class Element;
+
+        enum Storage {
+            HASHMAP,
+            MAP,
+            VECTOR
+        };
 
         /**
          * Constructor
          */
-        Object() = default;
+        explicit Object(Storage storage = HASHMAP);
+
+        Object(const Object&);
+        Object(Object&&);
+
+        Object& operator=(const Object&);
+        Object& operator=(Object&&);
+
+
+
+        ~Object();
 
         /**
          * @param member
@@ -35,13 +49,29 @@ namespace JsonMax {
 
         std::string toString(unsigned int indent = 0) const;
 
+        void remove(const std::string&);
+
 
     private:
+
+        void reset();
+        void move(Object&&);
+        void copy(const Object&);
 
         /**
          * The elements of the object
          */
-        std::vector<std::pair<std::string, Element *>> elements;
+
+
+        union Data {
+            std::vector<std::pair<std::string, Element>>* elementsVector;
+            std::map<std::string, Element*>* elementsMap;
+            std::unordered_map<std::string, Element*>* elementsHashmap;
+        };
+
+        Data data;
+
+        Storage storage;
 
     };
 

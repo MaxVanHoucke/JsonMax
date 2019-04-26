@@ -16,21 +16,21 @@ Element::Element() : type(UNINITIALIZED) {}
 std::string Element::toString(unsigned int ind) const {
     switch (type) {
         case INTEGER:
-            return std::to_string(number);
+            return std::to_string(*storage.number);
         case BOOLEAN:
-            if (boolean) return "true";
+            if (storage.boolean) return "true";
             else return "false";
         case FRACTION:
-            return std::to_string(fraction);
+            return std::to_string(*storage.fraction);
         case OBJECT:
-            return object->toString(ind);
+            return storage.object->toString(ind);
         case STRING:
-            return "\"" + string + "\"";
+            return "\"" + *storage.string + "\"";
         case ARRAY: {
             std::string arrayElements = "[";
-            for (int i = 0; i < array.size(); i++) {
-                arrayElements += array[i].toString();
-                if (i != array.size() - 1) arrayElements += ", ";
+            for (size_t i = 0; i < storage.array->size(); i++) {
+                arrayElements += storage.array->at(i).toString();
+                if (i != storage.array->size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
             if (ind) return Tools::indent(arrayElements, ind);
@@ -45,111 +45,117 @@ std::string Element::toString(unsigned int ind) const {
 
 
 Element &Element::operator=(int num) {
+    reset();
     setNumber(num);
     return *this;
 }
 
 Element &Element::operator=(double fraction) {
+    reset();
     setFraction(fraction);
     return *this;
 }
 
 Element &Element::operator=(const Object &obj) {
+    reset();
     setObject(obj);
     return *this;
 }
 
 Element &Element::operator=(const std::string &string) {
+    reset();
     setString(string);
     return *this;
 }
 
 Element &Element::operator=(const std::vector<Element> &arr) {
+    reset();
     setArray(arr);
     return *this;
 }
 
 Element &Element::operator=(bool boolean) {
+    reset();
     setBoolean(boolean);
     return *this;
 }
 
 Element &Element::operator=(const char *c_string) {
+    reset();
     setString(c_string);
     return *this;
 }
 
 Element &Element::operator[](const char *c_string) {
     if (type == OBJECT) {
-        return object->operator[](c_string);
+        std::cout << "no pro" << std::endl;
+        return storage.object->operator[](c_string);
     }
     throw TypeException("Invalid use of operator[](const char*), element is not a json object.");
 }
 
+Element& Element::operator[](const std::string &str) {
+    return (*this)[str.c_str()];
+}
+
 void Element::setNumber(int number) {
-    Element::number = number;
+    Element::storage.number = new int(number);
     type = INTEGER;
 }
 
 void Element::setBoolean(bool boolean) {
-    Element::boolean = boolean;
+    Element::storage.boolean = boolean;
     type = BOOLEAN;
 }
 
 void Element::setFraction(double fraction) {
-    Element::fraction = fraction;
+    Element::storage.fraction = new double(fraction);
     type = FRACTION;
 }
 
-void Element::setObject(Object object) {
-    Element::object = new Object();
-    *Element::object = object;
+void Element::setObject(const Object& object) {
+    Element::storage.object = new Object(object);
     type = OBJECT;
 }
 
 void Element::setString(const std::__cxx11::basic_string<char> &string) {
-    Element::string = string;
+    Element::storage.string = new std::string(string);
     type = STRING;
 }
 
 void Element::setArray(const std::vector<Element> &array) {
-    Element::array = array;
+    Element::storage.array = new std::vector<Element>(array);
     type = ARRAY;
 }
 
-Element::operator int() const {
+int Element::getInt() const {
     checkType(INTEGER);
-    return number;
+    return *storage.number;
 }
 
-Element::operator double() const {
+double Element::getDouble() const {
     checkType(FRACTION);
-    return fraction;
+    return *storage.fraction;
 }
 
-Element::operator std::string() const {
+std::string& Element::getString() const {
     checkType(STRING);
-    return string;
+    return *storage.string;
 }
 
-Element::operator const char *() const {
-    checkType(STRING);
-    return string.c_str();
-}
-
-Element::operator bool() const {
+bool Element::getBool() const {
     checkType(BOOLEAN);
-    return boolean;
+    return storage.boolean;
 }
 
-Element::operator Object() const {
+Object& Element::getObject() const {
     checkType(OBJECT);
-    return Object() = *object;
+    return *storage.object;
 }
 
-Element::operator std::vector<Element>() const {
+Array& Element::getArray() const {
     checkType(ARRAY);
-    return array;
+    return *storage.array;
 }
 
 Type Element::getType() const {
@@ -191,10 +197,9 @@ Element::Element(const std::vector<Element> &arr) {
 }
 
 Element &Element::operator=(std::nullptr_t pointer) {
+    reset();
     if (pointer == nullptr) {
         type = JSON_NULL;
-    } else {
-
     }
     return *this;
 }
@@ -210,27 +215,30 @@ Element::Element(const std::initializer_list<Element> &arr) {
 }
 
 Element &Element::operator=(const std::initializer_list<Element> &arr) {
+    reset();
     setArray(arr);
+    return *this;
 }
 
-Iterator Element::begin() {
-    if (type == OBJECT) {
-        return {0, object};
+void Element::reset() {
+    switch (type) {
+        case INTEGER: delete storage.number;
+            break;
+        case FRACTION: delete storage.fraction;
+            break;
+        case OBJECT: delete storage.string;
+            break;
+        case STRING: delete storage.string;
+            break;
+        case ARRAY: delete storage.array;
+            break;
+        default:
+            break;
     }
-    if (type == ARRAY) {
-        return {0, &array};
-    }
-
-    throw TypeException("Can't iterate over " + toString(type));
+    type = UNINITIALIZED;
 }
 
-Iterator Element::end() {
-    if (type == OBJECT) {
-        return {static_cast<int>(object->elements.size()), object};
-    }
-    if (type == ARRAY) {
-        return {static_cast<int>(array.size()), &array};
-    }
-
-    throw TypeException("Can't iterate over " + toString(type));
+Element::~Element() {
+    reset();
 }
+
