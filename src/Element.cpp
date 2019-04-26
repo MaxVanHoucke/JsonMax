@@ -307,3 +307,27 @@ Element& Element::operator=(const JsonMax::Element &obj) {
     }
     return *this;
 }
+
+bool Element::isInt() const {
+    return type == INTEGER;
+}
+
+bool Element::isDouble() const {
+    return type == FRACTION;
+}
+
+bool Element::isBool() const {
+    return type == BOOLEAN;
+}
+
+bool Element::isObject() const {
+    return type == OBJECT;
+}
+
+bool Element::isArray() const {
+    return type == ARRAY;
+}
+
+bool Element::isString() const {
+    return type == STRING;
+}

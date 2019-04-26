@@ -7,17 +7,16 @@
 - [Efficiency](#Upcomingfeatures)
 
 
-### Upcomingfeatures
+### Upcomin gfeatures
 - Derive from class to make object json deserializable
 - Single include
 - speed test
 - make any class serializable and deserializable
-- easy type checking functions
 
 
 ## Examples
 
-### Basic example, deserializing/parsing
+### Deserializing/parsing
 
 ```cpp
 // Single include

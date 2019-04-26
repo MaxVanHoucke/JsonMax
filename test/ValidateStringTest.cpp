@@ -2,41 +2,43 @@
  * @author Max Van Houcke
  */
 
-#include <gtest/gtest.h>
+#include "catch.h"
 #include "../src/Parser.h"
 
-TEST(validateString, happyDay) {
+using namespace JsonMax::Parser;
 
-    EXPECT_TRUE(JsonParser::validateString(""));
-    EXPECT_TRUE(JsonParser::validateString(" "));
-    EXPECT_TRUE(JsonParser::validateString("test a b c d e f g"));
-    EXPECT_TRUE(JsonParser::validateString("test abcdefg test"));
-    EXPECT_TRUE(JsonParser::validateString("hello world"));
-    EXPECT_TRUE(JsonParser::validateString("\\\" yes "));
-    EXPECT_TRUE(JsonParser::validateString("\\\" yes \\\""));
-    EXPECT_TRUE(JsonParser::validateString("\\/"));
-    EXPECT_TRUE(JsonParser::validateString("\\b"));
-    EXPECT_TRUE(JsonParser::validateString("\\f"));
-    EXPECT_TRUE(JsonParser::validateString("\\n"));
-    EXPECT_TRUE(JsonParser::validateString("\\r"));
-    EXPECT_TRUE(JsonParser::validateString("\\t"));
-    EXPECT_TRUE(JsonParser::validateString("\\uabcd"));
-    EXPECT_TRUE(JsonParser::validateString("\\uabcd"));
-    EXPECT_TRUE(JsonParser::validateString("\\u123d"));
-    EXPECT_TRUE(JsonParser::validateString("\\u123d"));
-    EXPECT_TRUE(JsonParser::validateString("\\u01fd"));
-    EXPECT_TRUE(JsonParser::validateString("\\u0abc"));
+TEST_CASE( "Strings are validated", "[validateString]" ) {
+
+    CHECK(validateString(""));
+    CHECK(validateString(" "));
+    CHECK(validateString("test a b c d e f g"));
+    CHECK(validateString("test abcdefg test"));
+    CHECK(validateString("hello world"));
+    CHECK(validateString("\\\" yes "));
+    CHECK(validateString("\\\" yes \\\""));
+    CHECK(validateString("\\/"));
+    CHECK(validateString("\\b"));
+    CHECK(validateString("\\f"));
+    CHECK(validateString("\\n"));
+    CHECK(validateString("\\r"));
+    CHECK(validateString("\\t"));
+    CHECK(validateString("\\uabcd"));
+    CHECK(validateString("\\uabcd"));
+    CHECK(validateString("\\u123d"));
+    CHECK(validateString("\\u123d"));
+    CHECK(validateString("\\u01fd"));
+    CHECK(validateString("\\u0abc"));
 
 }
 
-TEST(validateString, invalid) {
+TEST_CASE( "Incorrect strings are validated", "[validateNumber]" ) {
 
-    EXPECT_FALSE(JsonParser::validateString("\""));
-    EXPECT_FALSE(JsonParser::validateString("\\u123"));
-    EXPECT_FALSE(JsonParser::validateString("\\u12he"));
-    EXPECT_FALSE(JsonParser::validateString("\\a"));
-    EXPECT_FALSE(JsonParser::validateString("\\c"));
-    EXPECT_FALSE(JsonParser::validateString("\\g"));
-    EXPECT_FALSE(JsonParser::validateString("\"  \""));
+    CHECK_FALSE(validateString("\""));
+    CHECK_FALSE(validateString("\\u123"));
+    CHECK_FALSE(validateString("\\u12he"));
+    CHECK_FALSE(validateString("\\a"));
+    CHECK_FALSE(validateString("\\c"));
+    CHECK_FALSE(validateString("\\g"));
+    CHECK_FALSE(validateString("\"  \""));
 
 }

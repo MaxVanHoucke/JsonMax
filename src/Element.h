@@ -125,6 +125,24 @@ namespace JsonMax {
 
         /// Array getter, throws type exception if wrong type
         Array& getArray() const;
+        
+        /// Check if type is int
+        bool isInt() const;
+
+        /// Check if type is bool
+        bool isBool() const;
+        
+        /// Check if type is double
+        bool isDouble() const;
+
+        /// Check if type is string
+        bool isString() const;
+
+        /// Check if type is JSON Object
+        bool isObject() const;
+
+        /// Check if type is JSON Array
+        bool isArray() const;
 
     private:
 

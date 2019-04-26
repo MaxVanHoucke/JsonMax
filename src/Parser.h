@@ -49,7 +49,7 @@ namespace JsonMax {
         /// Parses an array without the [ and ]
         Element parseArray(const std::string &array);
 
-    };
+    }
 
 }
 
