@@ -291,6 +291,9 @@ namespace JsonMax {
         /// Check if type is JSON Array
         bool isArray() const;
 
+        /// Check if type is JSON Null
+        bool isNull() const;
+        
     private:
 
         /// Moves the given temp object to this
@@ -419,6 +422,9 @@ namespace JsonMax {
         /// Indents the given string with the given indentation (in spaces)
         std::string indent(const std::string &json, int indentation);
 
+        /// Returns the string representation of a double, without any trailing zeroes after the comma
+        std::string doubleToString(const double&);
+
     }
 
 }
@@ -489,7 +495,7 @@ std::string Element::toString(unsigned int ind) const {
             if (data.boolean) return "true";
             else return "false";
         case FRACTION:
-            return std::to_string(*data.fraction);
+            return Tools::doubleToString(*data.fraction);
         case OBJECT:
             return data.object->toString(ind);
         case STRING:
@@ -798,6 +804,10 @@ bool Element::isArray() const {
 
 bool Element::isString() const {
     return type == STRING;
+}
+
+bool Element::isNull() const {
+    return type == JSON_NULL;
 }
 
 Pair::Pair(std::string str, JsonMax::Element ele): key(std::move(str)), value(std::move(ele)) {}
@@ -1487,6 +1497,17 @@ std::string JsonMax::Tools::indent(const std::string &json, int indentation) {
 
     return output;
 }
+
+std::string JsonMax::Tools::doubleToString(const double &dou) {
+    std::string str = std::to_string(dou);
+    if (str.find('.') != std::string::npos) {
+        while (str.back() == '0' and str[str.length() - 2] != '.') {
+            str.pop_back();
+        }
+    }
+    return str;
+}
+
 
 std::string JsonMax::toString(Type type) {
     switch (type) {
