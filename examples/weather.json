@@ -1,0 +1,21 @@
+{
+  "type": "weather",
+  "source": "JsonMax",
+  "days": [
+    {
+      "day": "Monday",
+      "degrees in Celsius": 22.4,
+      "wind in knots": 10
+    },
+    {
+      "day": "Tuesday",
+      "degrees in Celsius": 19.8,
+      "wind in knots": 16
+    },
+    {
+      "day": "Wednesday",
+      "degrees in Celsius": 25.6,
+      "wind in knots": 8
+    }
+  ]
+}

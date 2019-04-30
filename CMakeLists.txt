@@ -4,5 +4,6 @@ project(JsonMax)
 set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(src)
+add_subdirectory(examples)
 add_subdirectory(single_include)
 add_subdirectory(test)
