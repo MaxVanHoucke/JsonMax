@@ -21,7 +21,7 @@ namespace JsonMax {
         UNINITIALIZED
     };
 
-    /// REturns string representation of a type
+    /// Returns string representation of a type
     std::string toString(Type type);
 
 }

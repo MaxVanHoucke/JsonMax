@@ -331,3 +331,7 @@ bool Element::isArray() const {
 bool Element::isString() const {
     return type == STRING;
 }
+
+bool Element::isNull() const {
+    return type == JSON_NULL;
+}

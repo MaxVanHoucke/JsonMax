@@ -144,6 +144,9 @@ namespace JsonMax {
         /// Check if type is JSON Array
         bool isArray() const;
 
+        /// Check if type is JSON Null
+        bool isNull() const;
+
     private:
 
         /// Moves the given temp object to this
