@@ -21,7 +21,7 @@ std::string Element::toString(unsigned int ind) const {
             if (data.boolean) return "true";
             else return "false";
         case FRACTION:
-            return std::to_string(*data.fraction);
+            return Tools::doubleToString(*data.fraction);
         case OBJECT:
             return data.object->toString(ind);
         case STRING:

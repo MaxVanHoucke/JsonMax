@@ -34,3 +34,13 @@ std::string JsonMax::Tools::indent(const std::string &json, int indentation) {
 
     return output;
 }
+
+std::string JsonMax::Tools::doubleToString(const double &dou) {
+    std::string str = std::to_string(dou);
+    if (str.find('.') != std::string::npos) {
+        while (str.back() == '0' and str[str.length() - 2] != '.') {
+            str.pop_back();
+        }
+    }
+    return str;
+}

@@ -68,6 +68,7 @@ TEST_CASE( "Numbers are validated", "[validateNumber]" ) {
 TEST_CASE( "Incorrect numbers are validated", "[validateNumber]" ) {
 
     CHECK_FALSE(validateNumber("-"));
+    CHECK_FALSE(validateNumber("--3"));
     CHECK_FALSE(validateNumber("dfa"));
     CHECK_FALSE(validateNumber("-1a"));
     CHECK_FALSE(validateNumber("011"));
