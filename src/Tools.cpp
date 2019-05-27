@@ -4,7 +4,9 @@
 
 #include "Tools.h"
 
-std::string JsonMax::Tools::indent(const std::string &json, int indentation) {
+using namespace JsonMax;
+
+std::string Tools::indent(const std::string &json, int indentation) {
     std::string output;
     unsigned int spaces = 0;
     bool escape = false;
@@ -35,7 +37,7 @@ std::string JsonMax::Tools::indent(const std::string &json, int indentation) {
     return output;
 }
 
-std::string JsonMax::Tools::doubleToString(const double &dou) {
+std::string Tools::doubleToString(const double &dou) {
     std::string str = std::to_string(dou);
     if (str.find('.') != std::string::npos) {
         while (str.back() == '0' and str[str.length() - 2] != '.') {

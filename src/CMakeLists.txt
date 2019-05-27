@@ -4,5 +4,4 @@ add_library(JsonMax
         Pair.cpp
         Parser.cpp
         Tools.cpp
-        Type.cpp
-        )
+        Type.cpp)

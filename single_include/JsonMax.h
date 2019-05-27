@@ -1,5 +1,5 @@
 /*
- MIT License
+MIT License
 
 Copyright (c) 2019 Max Van Houcke
 
@@ -20,10 +20,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
- */
+*/
 
-#ifndef JSONMAX_JSONMAX_H
-#define JSONMAX_JSONMAX_H
+#ifndef JSONMAX_H
+#define JSONMAX_H
 
 #include <string>
 #include <vector>
@@ -32,8 +32,8 @@ SOFTWARE.
 #include <sstream>
 #include <fstream>
 
-
 namespace JsonMax {
+
 
     /// Forward declarations
     class Element;
@@ -153,10 +153,7 @@ namespace JsonMax {
 
     };
 
-}
 
-
-namespace JsonMax {
 
     /// Possible types of a JSON Element
     enum Type {
@@ -170,13 +167,10 @@ namespace JsonMax {
         UNINITIALIZED
     };
 
-    /// REturns string representation of a type
+    /// Returns string representation of a type
     std::string toString(Type type);
 
-}
 
-
-namespace JsonMax {
 
     /// Forward declarations
     class Object;
@@ -292,13 +286,13 @@ namespace JsonMax {
 
         /// Array getter, throws type exception if wrong type
         Array& getArray() const;
-
+        
         /// Check if type is int
         bool isInt() const;
 
         /// Check if type is bool
         bool isBool() const;
-
+        
         /// Check if type is double
         bool isDouble() const;
 
@@ -364,10 +358,7 @@ namespace JsonMax {
 
     };
 
-}
 
-
-namespace JsonMax {
 
     /// Pair in a JSON Object
     class Pair {
@@ -389,10 +380,7 @@ namespace JsonMax {
 
     };
 
-}
 
-
-namespace JsonMax {
 
     /**
      * Parses a given string into a json element (object, array, int,...)
@@ -433,9 +421,7 @@ namespace JsonMax {
 
     }
 
-}
 
-namespace JsonMax {
 
     namespace Tools {
 
@@ -447,10 +433,7 @@ namespace JsonMax {
 
     }
 
-}
 
-
-namespace JsonMax {
 
 
     class TypeException : public std::exception {
@@ -499,11 +482,8 @@ namespace JsonMax {
     };
 
 }
-
-
-#include <math.h>
-
 using namespace JsonMax;
+
 
 Element::Element() : type(UNINITIALIZED) {}
 
@@ -830,6 +810,7 @@ bool Element::isNull() const {
     return type == JSON_NULL;
 }
 
+
 Pair::Pair(std::string str, JsonMax::Element ele): key(std::move(str)), value(std::move(ele)) {}
 
 const std::string& Pair::getKey() const {
@@ -841,10 +822,9 @@ const Element& Pair::getValue() const {
 }
 
 
-
 Object::Object(JsonMax::Storage _storage): storage(_storage) {
     switch (storage) {
-        case HASHMAP:
+        case HASHMAP: 
             data.elementsHashmap = new std::unordered_map<std::string, Element>();
             break;
         case MAP:
@@ -1487,7 +1467,8 @@ int Parser::findEnding(size_t start, char symbol, const std::string &string) {
     return -1;
 }
 
-std::string JsonMax::Tools::indent(const std::string &json, int indentation) {
+
+std::string Tools::indent(const std::string &json, int indentation) {
     std::string output;
     unsigned int spaces = 0;
     bool escape = false;
@@ -1518,7 +1499,7 @@ std::string JsonMax::Tools::indent(const std::string &json, int indentation) {
     return output;
 }
 
-std::string JsonMax::Tools::doubleToString(const double &dou) {
+std::string Tools::doubleToString(const double &dou) {
     std::string str = std::to_string(dou);
     if (str.find('.') != std::string::npos) {
         while (str.back() == '0' and str[str.length() - 2] != '.') {
@@ -1549,7 +1530,4 @@ std::string JsonMax::toString(Type type) {
             return "UNINITIALIZED";
     }
 }
-
-
-
-#endif //JSONMAX_JSONMAX_H
+#endif //JSONMAX_H
