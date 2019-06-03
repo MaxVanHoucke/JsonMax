@@ -91,8 +91,8 @@ Object vec(VECTOR);
 | | Retrieve | Insert  | Remove | Memory used | Order of pairs |
 |---|:---:|:---:|:---:|:---:|:---:|
 | Hashmap | O(1) | O(1) | O(1) | Most | Random      
-| Map | O(log n) | O(log n) | O(log n) | Medium | Alphabetical on keys 
-| Vector | O(n) | O(1) | O(1) | Minimal | Original
+| Map | O(log n) | O(log n) | O(log n) | Significant | Alphabetical on keys 
+| Vector | O(n) | O(1) | O(n) | Minimal | Original
 
 ### Usage
 
