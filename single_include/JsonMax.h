@@ -481,8 +481,6 @@ namespace JsonMax {
 
     };
 
-}
-using namespace JsonMax;
 
 
 Element::Element() : type(UNINITIALIZED) {}
@@ -712,7 +710,7 @@ Element::~Element() {
 }
 
 
-void Element::copy(const JsonMax::Element &obj) {
+void Element::copy(const Element &obj) {
     type = obj.type;
     switch (type) {
         case INTEGER: data.number = new int(*obj.data.number);
@@ -732,7 +730,7 @@ void Element::copy(const JsonMax::Element &obj) {
     }
 }
 
-void Element::move(JsonMax::Element &&obj) {
+void Element::move(Element &&obj) {
     type = obj.type;
     switch (type) {
         case INTEGER: data.number = obj.data.number;
@@ -758,15 +756,15 @@ void Element::move(JsonMax::Element &&obj) {
 }
 
 
-Element::Element(const JsonMax::Element &obj) {
+Element::Element(const Element &obj) {
     copy(obj);
 }
 
-Element::Element(JsonMax::Element &&obj) noexcept {
+Element::Element(Element &&obj) noexcept {
     move(std::move(obj));
 }
 
-Element& Element::operator=(JsonMax::Element &&obj) noexcept {
+Element& Element::operator=(Element &&obj) noexcept {
     if (this != &obj) {
         reset();
         move(std::move(obj));
@@ -774,7 +772,7 @@ Element& Element::operator=(JsonMax::Element &&obj) noexcept {
     return *this;
 }
 
-Element& Element::operator=(const JsonMax::Element &obj) {
+Element& Element::operator=(const Element &obj) {
     if (this != &obj) {
         reset();
         copy(obj);
@@ -811,7 +809,7 @@ bool Element::isNull() const {
 }
 
 
-Pair::Pair(std::string str, JsonMax::Element ele): key(std::move(str)), value(std::move(ele)) {}
+Pair::Pair(std::string str, Element ele): key(std::move(str)), value(std::move(ele)) {}
 
 const std::string& Pair::getKey() const {
     return key;
@@ -822,7 +820,7 @@ const Element& Pair::getValue() const {
 }
 
 
-Object::Object(JsonMax::Storage _storage): storage(_storage) {
+Object::Object(Storage _storage): storage(_storage) {
     switch (storage) {
         case HASHMAP: 
             data.elementsHashmap = new std::unordered_map<std::string, Element>();
@@ -856,7 +854,7 @@ void Object::reset() {
 }
 
 
-void Object::move(JsonMax::Object &&obj) {
+void Object::move(Object &&obj) {
     storage = obj.storage;
     switch (obj.storage) {
         case HASHMAP:
@@ -874,7 +872,7 @@ void Object::move(JsonMax::Object &&obj) {
     }
 }
 
-void Object::copy(const JsonMax::Object &obj) {
+void Object::copy(const Object &obj) {
     storage = obj.storage;
     switch (obj.storage) {
         case HASHMAP:
@@ -889,16 +887,16 @@ void Object::copy(const JsonMax::Object &obj) {
     }
 }
 
-Object::Object(JsonMax::Object &&obj) noexcept {
+Object::Object(Object &&obj) noexcept {
     move(std::move(obj));
 }
 
 
-Object::Object(const JsonMax::Object &obj) {
+Object::Object(const Object &obj) {
     copy(obj);
 }
 
-Object& Object::operator=(const JsonMax::Object &obj) {
+Object& Object::operator=(const Object &obj) {
     if (&obj != this) {
         reset();
         copy(obj);
@@ -906,7 +904,7 @@ Object& Object::operator=(const JsonMax::Object &obj) {
     return *this;
 }
 
-Object& Object::operator=(JsonMax::Object &&obj) noexcept {
+Object& Object::operator=(Object &&obj) noexcept {
     if (&obj != this) {
         reset();
         move(std::move(obj));
@@ -1085,7 +1083,7 @@ void Object::clear() {
 }
 
 
-Element JsonMax::parse(const std::string &json) {
+Element parse(const std::string &json) {
     std::string element = Parser::trim(json);
 
     if (element == "true") {
@@ -1147,7 +1145,7 @@ Element JsonMax::parse(const std::string &json) {
 }
 
 
-Element JsonMax::parseFile(const std::string &fileName) {
+Element parseFile(const std::string &fileName) {
     std::ifstream in(fileName);
 
     if (not in.good()) {
@@ -1510,7 +1508,7 @@ std::string Tools::doubleToString(const double &dou) {
 }
 
 
-std::string JsonMax::toString(Type type) {
+std::string toString(Type type) {
     switch (type) {
         case INTEGER:
             return "INTEGER";
@@ -1529,5 +1527,6 @@ std::string JsonMax::toString(Type type) {
         case UNINITIALIZED:
             return "UNINITIALIZED";
     }
+}
 }
 #endif //JSONMAX_H

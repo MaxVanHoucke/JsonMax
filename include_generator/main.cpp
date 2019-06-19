@@ -4,7 +4,7 @@
 
 #include <string>
 #include <fstream>
-
+#include <sstream>
 
 std::string fileToString(const std::string& filename) {
     std::string str;
@@ -36,11 +36,18 @@ std::string fromHeader(const std::string& filename) {
     return content.substr(0, content.rfind('}'));
 }
 
+void removeNamespace(std::string& str) {
+    size_t pos = 0;
+    std::string toRemove = "JsonMax::";
+    while ((pos = str.find(toRemove, pos)) != std::string::npos) {
+        str.replace(pos, toRemove.size(), "");
+    }
+}
 
 int main() {
 
     std::string filename = "../../single_include/JsonMax.h";
-    std::ofstream out(filename);
+    std::ostringstream out;
 
     // Add license comment
     out << "/*" << std::endl << fileToString("../../LICENSE") << "*/\n" << std::endl;
@@ -64,15 +71,21 @@ int main() {
     out << fromHeader("../../src/Parser.h");
     out << fromHeader("../../src/Tools.h");
     out << fromHeader("../../src/Exceptions.h");
-    out << "}" << std::endl;
-    out << "using namespace JsonMax;" << std::endl;
     out << fromCpp("../../src/Element.cpp");
     out << fromCpp("../../src/Pair.cpp");
     out << fromCpp("../../src/Object.cpp");
     out << fromCpp("../../src/Parser.cpp");
     out << fromCpp("../../src/Tools.cpp");
     out << fromCpp("../../src/Type.cpp");
+    out << "}" << std::endl;
     out << "#endif //JSONMAX_H" << std::endl;
+
+    std::string output = out.str();
+    removeNamespace(output);
+
+    std::ofstream file(filename);
+    file << output;
+    file.close();
 
     return 0;
 }
