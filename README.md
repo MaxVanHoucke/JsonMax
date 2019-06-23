@@ -2,19 +2,16 @@
 
 ### A lightweight Single Include Json library for modern C++11
 
-- [Guide](#guide)
-  - [How to use](#how-to-use)
-  - [Element](#element)
-  - [Object](#object)
-  - [Parsing/toJson](#deserializationserialization-parsingtojson)
-  - [Error handling](#error-handling)
+- [How to use](#how-to-use)
+- [Element](#element)
+- [Object](#object)
+- [Parsing/toJson](#deserializationserialization-parsingtojson)
+- [Error handling](#error-handling)
 - [Efficiency](#efficiency)
-
-# Guide
 
 ## How to use
 
-JsonMax is written in C++11 and only uses the standard library. Just download the single include file, and include it wherever you need. It's that easy!  
+JsonMax is written in C++11 and only uses the standard library. Just [download](single_include/JsonMax.h) the single include file, and include it wherever you need. It's that easy!  
 
 ```cpp
 #include "JsonMax.h"
@@ -24,8 +21,7 @@ using namespace JsonMax;
 ```
 
 ## Element
-Every possible Json value (string, int, float, Json Object and Json Array) can be stored as an instance of type Element.
-Examples:
+Every possible Json value can be stored as an Element
 
 ```cpp
 Element str = "JsonMax";
@@ -36,17 +32,15 @@ Element array = {"all possible json values", 3.14, 10, Object()};
 Element boolean = true;
 Element jsonNull = nullptr;
 
-// Assignment operators available, which changes the underlying type
+// Assignment operators available, changes the underlying type
 integer = "now it's a string";
 ```
 
 ### Getters
 
-When using a getter on an Element with a different type, i.e. contains a string but getInt() is called, a TypeException is thrown.
+When using a getter on an Element that stores a different type, e.g. stores a string but getInt() is called, a TypeException is thrown.
 
 ```cpp
-Element element;
-
 element.getBool();
 element.getInt();
 element.getDouble();
@@ -96,33 +90,27 @@ Object vec(VECTOR);
 
 ### Usage
 
-The operator[] fetches the Element with the given key, so the following code 
-can be written
+The operator[] returns a reference to the Element with the given key (and creates one if the key didn't exist yet).  
+Now the element can be used as previously described, which makes for some elegant code
 
 ```cpp
 Object object;
 
-// Get a reference to the Element
-Element& element = object["key"];
-
-// Strings, ints and doubles
 object["library"] = "JsonMax";
 object["number"] = 10;
 object["pi"] = 3.14;
 
-// Array with initializer list
 object["array"] = {"can be all possible json values", 10, 2.1, Object()};
 
-// Array with JsonMax::Array (which is a type alias for vector<Element>)
+// Array is a type alias for vector<Element>
 Array array;
 array.push_back("can be all possible json values");
 array.push_back(10);
 object["different array"] = array;
- 
-// Object
+
 object["owner"] = Object();
 
-// Easily access/change object by chaining the operator[]
+// Chaining the operator[] works fine, if the elements are of type Object
 object["owner"]["name"] = "Max";
 ```
 
@@ -179,7 +167,7 @@ objFromFile.toString();
 objFromFile.toString(4);
 ```
 
-### Error handling
+## Error handling
 
 The library includes 2 exceptions: TypeException and ParseException.  
 Both inherit from std::exception and are self explanatory.
