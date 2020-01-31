@@ -1,9 +1,13 @@
+/**
+ * Example that shows parsing and reading a json file
+ */
+
 #include <iostream>
 #include "../single_include/JsonMax.h"
 
 using namespace JsonMax;
 
-int main(int argc, char** argv) {
+int main() {
 
     std::string fileName = "../../examples/weather.json";
     Object weather = parseFile(fileName).getObject();

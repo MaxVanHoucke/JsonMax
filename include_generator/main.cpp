@@ -1,11 +1,14 @@
 /**
  * @author Max Van Houcke
+ * Converts all the source and header files into a single include header
  */
 
 #include <string>
 #include <fstream>
 #include <sstream>
 
+
+/// Converts a file into a single string
 std::string fileToString(const std::string& filename) {
     std::string str;
     std::ifstream in(filename);
@@ -21,6 +24,7 @@ std::string fileToString(const std::string& filename) {
 }
 
 
+/// Returns the actual code in a cpp file
 std::string fromCpp(const std::string& filename) {
     std::string content = fileToString(filename);
     std::string usingStatement = "using namespace JsonMax;";
@@ -28,6 +32,8 @@ std::string fromCpp(const std::string& filename) {
     return content.substr(pos + usingStatement.size());
 }
 
+
+/// Returns the actual code/declarations in a header file
 std::string fromHeader(const std::string& filename) {
     std::string content = fileToString(filename);
     std::string namespaceStatement = "namespace JsonMax {";
@@ -36,6 +42,8 @@ std::string fromHeader(const std::string& filename) {
     return content.substr(0, content.rfind('}'));
 }
 
+
+/// Removes the JsonMax:: in the given string to prevent compilation errors
 void removeNamespace(std::string& str) {
     size_t pos = 0;
     std::string toRemove = "JsonMax::";
@@ -43,6 +51,7 @@ void removeNamespace(std::string& str) {
         str.replace(pos, toRemove.size(), "");
     }
 }
+
 
 int main() {
 

@@ -1,1 +1,1 @@
-add_executable(JsonMaxDemo weather.cpp)
+add_executable(JsonMaxDemo sweets.cpp)

@@ -1472,7 +1472,39 @@ std::string Tools::indent(const std::string &json, int indentation) {
     bool escape = false;
     bool inString = false;
 
-    for (char symbol: json) {
+    for (size_t i = 0; i < json.size(); i++) {
+        char symbol = json[i];
+
+        if (escape) {
+            output += symbol;
+            escape = false;
+            continue;
+        } else if (inString) {
+            inString = '"' != symbol;
+            output += symbol;
+            continue;
+        }
+
+
+        if ((symbol == '{' and json[i + 1] != '}') or (symbol == '[' and json[i + 1] != ']')) {
+            spaces += indentation;
+            output += std::string(1, symbol) + "\n" + std::string(spaces, ' ');
+        } else if ((symbol == '}' and json[i - 1] != '{') or (symbol == ']' and json[i - 1] != '[')) {
+            spaces -= indentation;
+            output += "\n" + std::string(spaces, ' ') + std::string(1, symbol);
+        } else if (symbol == ',') {
+            output += ",\n" + std::string(spaces - 1, ' ');
+        } else {
+            if (symbol == '\\') {
+                escape = true;
+            } else if (symbol == '"') {
+                inString = true;
+            }
+
+            output += symbol;
+        }
+
+        continue;
 
         if (symbol == '\\' and !escape) {
             output += symbol;
@@ -1528,5 +1560,5 @@ std::string toString(Type type) {
             return "UNINITIALIZED";
     }
 }
-}
+} // namespace JsonMax
 #endif //JSONMAX_H
