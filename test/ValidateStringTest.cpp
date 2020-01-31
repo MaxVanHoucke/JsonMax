@@ -2,7 +2,7 @@
  * @author Max Van Houcke
  */
 
-#include "catch.h"
+#include "catch.hpp"
 #include "../src/Parser.h"
 
 using namespace JsonMax::Parser;
@@ -31,7 +31,7 @@ TEST_CASE( "Strings are validated", "[validateString]" ) {
 
 }
 
-TEST_CASE( "Incorrect strings are validated", "[validateNumber]" ) {
+TEST_CASE( "Incorrect strings are validated", "[validateString]" ) {
 
     CHECK_FALSE(validateString("\""));
     CHECK_FALSE(validateString("\\u123"));

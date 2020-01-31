@@ -77,7 +77,7 @@ int main() {
     out << fromCpp("../../src/Parser.cpp");
     out << fromCpp("../../src/Tools.cpp");
     out << fromCpp("../../src/Type.cpp");
-    out << "}" << std::endl;
+    out << "} // namespace JsonMax" << std::endl;
     out << "#endif //JSONMAX_H" << std::endl;
 
     std::string output = out.str();

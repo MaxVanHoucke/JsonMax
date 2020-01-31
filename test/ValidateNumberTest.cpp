@@ -2,7 +2,7 @@
  * @author Max Van Houcke
  */
 
-#include "catch.h"
+#include "catch.hpp"
 #include "../src/Parser.h"
 
 using namespace JsonMax::Parser;
