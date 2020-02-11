@@ -26,30 +26,47 @@ namespace JsonMax {
     Element parseFile(const std::string& fileName);
 
     /// Helper function for parsing
-    namespace Parser {
+    class Parser {
+    public:
+
+        static std::string fileToString(const std::string& fileName);
 
         /// Finds the position of the next symbol given that is not in a json string
-        int findIndex(size_t start, char symbol, const std::string &string);
+        static int findIndex(size_t start, char symbol, const std::string &string);
+
+        static int findArrayEnding(size_t start, const std::string& string);
+
+        static int findObjectEnding(size_t start, const std::string& string);
 
         /// When giving '{' it finds the next '}' and returns the position
-        int findEnding(size_t start, char symbol, const std::string &string);
+        static int findEnding(size_t start, char symbol, const std::string &string);
 
         /// Checks if it's a valid json string
-        bool validateString(const std::string &string);
+        static bool isValidString(const std::string &string);
 
         /// Checks if it's a valid json number
-        bool validateNumber(const std::string &number);
+        static bool isValidNumber(const std::string &number);
 
         /// Trims the string, removes whitespace etc
-        std::string trim(const std::string &string);
+        static std::string trim(const std::string &string);
 
         /// Parses an object without the { and }
-        Object parseObject(const std::string &object);
+        static Object parseObject(const std::string &object);
 
         /// Parses an array without the [ and ]
-        Element parseArray(const std::string &array);
+        static Element parseArray(const std::string &array);
 
-    }
+        static Element parseArrayContent(const std::string& array);
+
+        static Object parseObjectContent(const std::string& object);
+
+        static Element parseNumber(const std::string& number);
+
+        static Element parseNumberFromString(const std::string& number);
+
+        static Element parseString(const std::string& string);
+
+    };
 
 }
 

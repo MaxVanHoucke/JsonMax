@@ -14,48 +14,30 @@
 namespace JsonMax {
 
 
-    class TypeException : public std::exception {
-    public:
-
-        friend class Element;
-
-        virtual const char *what() const throw() {
-            return msg.c_str();
-        }
-
+    class TypeException : public std::runtime_error {
     protected:
 
-        TypeException(Type actual, Type expected) {
-            msg = "Casting an element of type " + toString(actual) + " to " +
-                  toString(expected) + " is not possible.";
+        TypeException(Type actual, Type expected) : std::runtime_error(
+                "Casting an element of type " + toString(actual) + " to " +
+                toString(expected) + " is not possible.") {
         }
 
-        explicit TypeException(const std::string &str) {
-            msg = str;
-        }
+        explicit TypeException(const std::string &str) : std::runtime_error(str) {}
 
-        std::string msg;
-
+        friend class Element;
     };
 
 
-    class ParseException : public std::exception {
-    public:
-
-        friend Element parse(const std::string &);
-        friend Element parseFile(const std::string &);
-        friend Element Parser::parseArray(const std::string&);
-        friend Object Parser::parseObject(const std::string&);
-
-        virtual const char *what() const throw() {
-            return msg.c_str();
-        }
-
+    class ParseException : public std::runtime_error {
     protected:
 
-        ParseException(const char *message) : msg(message) {}
+        explicit ParseException(const std::string &message) : std::runtime_error(message) {}
 
-        std::string msg;
+        friend Element parse(const std::string &);
+
+        friend Element parseFile(const std::string &);
+
+        friend class Parser;
 
     };
 
