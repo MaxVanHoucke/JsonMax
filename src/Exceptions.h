@@ -31,14 +31,14 @@ namespace JsonMax {
     class ParseException : public std::runtime_error {
     protected:
 
-        explicit ParseException(const std::string &message) : std::runtime_error(message) {}
-
         friend Element parse(const std::string &);
 
         friend Element parseFile(const std::string &);
 
         friend class Parser;
 
+    public:
+        explicit ParseException(const std::string &message) : std::runtime_error(message) {}
     };
 
 }

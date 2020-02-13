@@ -34,13 +34,6 @@ namespace JsonMax {
         /// Finds the position of the next symbol given that is not in a json string
         static int findIndex(size_t start, char symbol, const std::string &string);
 
-        static int findArrayEnding(size_t start, const std::string& string);
-
-        static int findObjectEnding(size_t start, const std::string& string);
-
-        /// When giving '{' it finds the next '}' and returns the position
-        static int findEnding(size_t start, char symbol, const std::string &string);
-
         /// Checks if it's a valid json string
         static bool isValidString(const std::string &string);
 
@@ -65,6 +58,35 @@ namespace JsonMax {
         static Element parseNumberFromString(const std::string& number);
 
         static Element parseString(const std::string& string);
+
+
+    };
+
+    class ObjectParser {
+    public:
+
+        ObjectParser(const std::string& str): json(Parser::trim(str)), index(0) {}
+
+        Element parse();
+
+        Element parseArray();
+
+    private:
+
+        void moveToNonEmptyPosition();
+
+        bool endOfParsing() const;
+
+        std::string extractKeyAndAdjustIndex();
+
+        std::string extractElementAndAdjustIndex();
+
+        void checkForDoublePointAndAdjustIndex();
+
+        size_t findIndexOfCharAfterElement(char symbol);
+
+        size_t index;
+        std::string json;
 
     };
 
