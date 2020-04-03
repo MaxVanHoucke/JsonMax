@@ -38,7 +38,6 @@ namespace JsonMax {
 
     protected:
 
-        void moveToNonEmptyPosition();
 
         bool endOfParsing() const;
 
@@ -46,9 +45,11 @@ namespace JsonMax {
 
         size_t findIndexAfterElement(char symbol);
 
-        static Element parseNumber(const std::string& number);
+        void trim();
 
-        static Element parseNumberFromString(const std::string& number);
+        void trimEndWhitespace();
+
+        void moveToNonEmptyPosition();
 
         const std::string& json;
         size_t index;

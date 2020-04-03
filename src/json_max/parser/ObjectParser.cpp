@@ -8,6 +8,7 @@
 using namespace JsonMax;
 
 Element ObjectParser::parse() {
+    trim();
 //    throw ParseException("Invalid Json: object does not end with '}'");
 
     Element obj = Object();

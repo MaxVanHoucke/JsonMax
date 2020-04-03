@@ -7,6 +7,7 @@
 #include "ObjectParser.h"
 #include "ArrayParser.h"
 #include "StringParser.h"
+#include "NumberParser.h"
 
 #include <fstream>
 #include <sstream>
@@ -23,7 +24,10 @@ Element JsonMax::parseFile(const std::string &fileName) {
 }
 
 Element Parser::parse() {
+    trimEndWhitespace();
+    moveToNonEmptyPosition();
     size_t size = endIndex - index;
+
     if (size == 0) {
         return Element();
     } else if (size == 4 and json.substr(index, size) == "true") {
@@ -39,10 +43,8 @@ Element Parser::parse() {
     } else if (json[index] == '"') {
         return StringParser(json, index, endIndex).parse();
     } else {
-        return Parser::parseNumber(element);
+        return NumberParser(json, index, endIndex).parse();
     }
-
-//    throw ParseException("Invalid Json, element " + element + " is not a supported type.");
 }
 
 void Parser::moveToNonEmptyPosition() {
@@ -50,27 +52,14 @@ void Parser::moveToNonEmptyPosition() {
 }
 
 
+void Parser::trim() {
+    trimEndWhitespace();
+    moveToNonEmptyPosition();
+}
+
+
 bool Parser::endOfParsing() const {
     return index == std::string::npos or index >= endIndex;
-}
-
-Element Parser::parseNumber(const std::string &element) {
-    try {
-        return parseNumberFromString(element);
-    } catch (std::out_of_range &e) {
-        throw ParseException("Cannot parse, number '" + element + "' is out of range.");
-    } catch (std::invalid_argument &e) {
-        throw ParseException("Invalid Json, number '" + element + "' is not valid.");
-    }
-}
-
-Element Parser::parseNumberFromString(const std::string &element) {
-    double number = std::stod(element);
-    if (element.find('.') == std::string::npos) {
-        return Element((int) number);
-    } else {
-        return Element(number);
-    }
 }
 
 std::string Parser::fileToString(const std::string &fileName) {
@@ -93,6 +82,10 @@ std::string Parser::extractElementAndAdjustIndex() {
         index = indexOfNextComma + 1;
     }
     return element;
+}
+
+void Parser::trimEndWhitespace() {
+    endIndex = json.find_last_not_of(" \t\n", index, endIndex - index);
 }
 
 size_t Parser::findIndexAfterElement(char symbol) {
