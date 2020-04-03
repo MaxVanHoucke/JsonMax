@@ -1,22 +1,15 @@
-sudo: false
 dist: trusty
 language: cpp
-compiler: gcc
-
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-8
-      - gcc-8
-
-
-install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-8" CC="gcc-8"; fi
-
+      - gcc-7
+      - g++-7
 script:
-  - gcc -v && g++ -v && cmake --version
+  - export CC=gcc-7
+  - export CXX=g++-7
   - mkdir build
   - cd build
   - cmake ..
