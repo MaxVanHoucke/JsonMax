@@ -2,6 +2,7 @@ add_library(JsonMax
         model/Element.cpp
         model/Object.cpp
         model/Pair.cpp
+        model/Type.cpp
         parser/Parser.cpp
-        Tools.cpp
-        model/Type.cpp parser/StringValidator.cpp parser/StringValidator.h)
+        parser/ObjectParser.cpp
+        Tools.cpp parser/ArrayParser.cpp parser/ArrayParser.h parser/StringParser.cpp parser/StringParser.h)

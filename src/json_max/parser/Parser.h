@@ -5,7 +5,6 @@
 #ifndef JSONMAX_JSONPARSER_H
 #define JSONMAX_JSONPARSER_H
 
-#include <iostream>
 #include <stack>
 #include "../model/Element.h"
 #include "../model/Object.h"
@@ -25,72 +24,35 @@ namespace JsonMax {
      */
     Element parseFile(const std::string& fileName);
 
-    bool escapedHexadecimalIsCorrect(const std::string& input, size_t index);
 
-    bool escapedStringPartIsValid(const std::string& input, size_t index);
-
-        /// Helper function for parsing
     class Parser {
     public:
 
+        Parser(const std::string& str, size_t start, size_t end) : json(str), index(start), endIndex(end) {}
+
+        explicit Parser(const std::string& str) : json(str), index(0), endIndex(str.size()) {}
+
+        virtual Element parse();
+
         static std::string fileToString(const std::string& fileName);
 
-        /// Finds the position of the next symbol given that is not in a json string
-        static int findIndex(size_t start, char symbol, const std::string &string);
-
-        /// Checks if it's a valid json string
-        static bool isValidString(const std::string &string);
-
-        /// Checks if it's a valid json number
-        static bool isValidNumber(const std::string &number);
-
-        /// Trims the string, removes whitespace etc
-        static std::string trim(const std::string &string);
-
-        /// Parses an object without the { and }
-        static Object parseObject(const std::string &object);
-
-        /// Parses an array without the [ and ]
-        static Element parseArray(const std::string &array);
-
-        static Element parseArrayContent(const std::string& array);
-
-        static Object parseObjectContent(const std::string& object);
-
-        static Element parseNumber(const std::string& number);
-
-        static Element parseNumberFromString(const std::string& number);
-
-        static Element parseString(const std::string& string);
-
-
-    };
-
-    class ObjectParser {
-    public:
-
-        ObjectParser(const std::string& str): json(Parser::trim(str)), index(0) {}
-
-        Element parse();
-
-        Element parseArray();
-
-    private:
+    protected:
 
         void moveToNonEmptyPosition();
 
         bool endOfParsing() const;
 
-        std::string extractKeyAndAdjustIndex();
-
         std::string extractElementAndAdjustIndex();
 
-        void checkForDoublePointAndAdjustIndex();
+        size_t findIndexAfterElement(char symbol);
 
-        size_t findIndexOfCharAfterElement(char symbol);
+        static Element parseNumber(const std::string& number);
 
+        static Element parseNumberFromString(const std::string& number);
+
+        const std::string& json;
         size_t index;
-        std::string json;
+        size_t endIndex;
 
     };
 
