@@ -3,7 +3,7 @@
  */
 
 #include "catch.hpp"
-#include "../src/Parser.h"
+#include "../src/json_max/parser/Parser.h"
 
 using namespace JsonMax;
 

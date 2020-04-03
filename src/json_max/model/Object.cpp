@@ -4,7 +4,7 @@
 
 #include "Object.h"
 #include "Element.h"
-#include "Tools.h"
+#include "../Tools.h"
 #include "Pair.h"
 
 using namespace JsonMax;

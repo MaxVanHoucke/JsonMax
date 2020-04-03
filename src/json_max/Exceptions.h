@@ -6,9 +6,9 @@
 #define JSONMAX_EXCEPTIONS_H
 
 
-#include "Element.h"
-#include "Parser.h"
-#include "Type.h"
+#include "model/Element.h"
+#include "parser/Parser.h"
+#include "model/Type.h"
 
 
 namespace JsonMax {

@@ -1,6 +1,5 @@
 add_executable(JsonMaxTests
         main.cpp
-        ValidateNumberTest.cpp
         ValidateStringTest.cpp
         ParsingTest.cpp
         )

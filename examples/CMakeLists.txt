@@ -1,1 +1,2 @@
-add_executable(JsonMaxDemo sweets.cpp)
+add_subdirectory(sweets)
+add_subdirectory(weather)

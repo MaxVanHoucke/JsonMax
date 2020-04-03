@@ -7,8 +7,8 @@
 
 #include <iostream>
 #include <stack>
-#include "Element.h"
-#include "Object.h"
+#include "../model/Element.h"
+#include "../model/Object.h"
 
 namespace JsonMax {
 
@@ -25,7 +25,11 @@ namespace JsonMax {
      */
     Element parseFile(const std::string& fileName);
 
-    /// Helper function for parsing
+    bool escapedHexadecimalIsCorrect(const std::string& input, size_t index);
+
+    bool escapedStringPartIsValid(const std::string& input, size_t index);
+
+        /// Helper function for parsing
     class Parser {
     public:
 

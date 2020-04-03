@@ -3,7 +3,7 @@
  */
 
 #include "Parser.h"
-#include "Exceptions.h"
+#include "../Exceptions.h"
 
 #include <fstream>
 #include <sstream>
@@ -27,7 +27,7 @@ Element JsonMax::parse(const std::string &json) {
         return Parser::parseArray(element);
     } else if (element[0] == '"') {
         return Parser::parseString(element);
-    } else if (Parser::isValidNumber(element)) {
+    } else {
         return Parser::parseNumber(element);
     }
 
@@ -64,18 +64,23 @@ bool ObjectParser::endOfParsing() const {
 }
 
 std::string ObjectParser::extractKeyAndAdjustIndex() {
+    // First quotation mark
     moveToNonEmptyPosition();
-    if (index == std::string::npos or json[index] != '"') {
+    if (endOfParsing() or json[index] != '"') {
         throw ParseException("Invalid Json, missing key in object");
     }
     index++;
-    int indexOfStringEnd = findIndexOfCharAfterElement('"');
-    if (indexOfStringEnd == std::string::npos) {
+
+    int keyStart = index;
+
+    // Second quotation mark
+    index = findIndexOfCharAfterElement('"');
+    if (endOfParsing()) {
         throw ParseException("Invalid Json, key in object has no ending");
     }
-    std::string keyWithoutParentheses = json.substr(index, indexOfStringEnd - index);
-    index = indexOfStringEnd + 1;
-    return keyWithoutParentheses;
+    index++;
+
+    return json.substr(keyStart, index - keyStart - 1);
 }
 
 void ObjectParser::moveToNonEmptyPosition() {
@@ -84,7 +89,7 @@ void ObjectParser::moveToNonEmptyPosition() {
 
 void ObjectParser::checkForDoublePointAndAdjustIndex() {
     moveToNonEmptyPosition();
-    if (index == std::string::npos or json[index] != ':') {
+    if (endOfParsing() or json[index] != ':') {
         throw ParseException("Invalid Json, no ':' between key and value");
     }
     index++;
@@ -153,93 +158,18 @@ Element JsonMax::parseFile(const std::string &fileName) {
     return parse(fileContent);
 }
 
-bool Parser::isValidNumber(const std::string &number) {
-    unsigned int index = 0;
-    bool valid = false;
-
-    try {
-        if (number.at(0) == '-') {
-            index++;
-        }
-
-        if (number.at(index) == '0') {
-            index++;
-            goto point;
-        } else if (isdigit(number.at(index))) {
-            valid = true;
-            while (isdigit(number.at(index))) {
-                index++;
-            }
-        } else return false;
-
-        point:
-        valid = true;
-
-        if (number.at(index) == '.') {
-            index++;
-            valid = false;
-            while (isdigit(number.at(index))) {
-                valid = true;
-                index++;
-            }
-        }
-
-        if (number.at(index) == 'e' or number.at(index) == 'E') {
-            index++;
-            valid = false;
-        } else return false;
-
-        if (number.at(index) == '+' or number.at(index) == '-') {
-            index++;
-        }
-
-        if (!isdigit(number.at(index))) {
-            return false;
-        }
-
-        while (index != number.size()) {
-            if (!isdigit(number.at(index))) {
-                return false;
-            }
-            index++;
-        }
-
-        return true;
-    }
-    catch (std::out_of_range &exception) {
-        return valid;
-    }
-}
-
 bool Parser::isValidString(const std::string &input) {
-    bool escape = false;
-    if (input.size() < 2 or input[0] != '"' or input.back() != '"') {
+    if (input.size() < 2 or input.front() != '"' or input.back() != '"') {
         return false;
     }
 
-    std::string string = input.substr(1, input.size() - 2);
-
-    for (size_t i = 0; i < string.size(); i++) {
-        char symbol = string[i];
-
+    bool escape = false;
+    for (size_t i = 1; i < input.size() - 1; i++) {
+        char symbol = input[i];
         if (escape) {
-            if (not(symbol == '"' or symbol == '\\'
-                    or symbol == '/' or symbol == 'b'
-                    or symbol == 'f' or symbol == 'n'
-                    or symbol == 'r' or symbol == 't'
-                    or symbol == 'u'))
+            if (not escapedStringPartIsValid(input, i)) {
                 return false;
-
-            if (symbol == 'u') {
-                if (i + 4 >= string.size()) {
-                    return false;
-                }
-                std::string hexa = string.substr(i + 1, 4);
-                if (hexa.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos) {
-                    return false;
-                }
             }
-
             escape = false;
         } else if (symbol == '\\') {
             escape = true;
@@ -249,6 +179,28 @@ bool Parser::isValidString(const std::string &input) {
     }
     return true;
 }
+
+bool JsonMax::escapedHexadecimalIsCorrect(const std::string& input, size_t index) {
+    if (index + 4 >= input.size()) {
+        return false;
+    }
+    const static std::string hexa = "0123456789abcdefABCDEF";
+    size_t result = input.find_first_not_of(hexa.c_str(), index + 1, 4);
+    return result != std::string::npos;
+}
+
+
+bool JsonMax::escapedStringPartIsValid(const std::string& input, size_t index) {
+    char symbol = input[index];
+    // Allowed chars after escape
+    const static std::string allowed = "\"\\/bfnrtu";
+    if (allowed.find(symbol) == std::string::npos) {
+        return false;
+    }
+    // u has to be followed by 4 hexadecimal units
+    return symbol != 'u' or escapedHexadecimalIsCorrect(input, index);
+}
+
 
 std::string Parser::trim(const std::string &str) {
     const auto strBegin = str.find_first_not_of(" \t\n");
