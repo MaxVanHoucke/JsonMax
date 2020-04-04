@@ -8,6 +8,7 @@
 - [Parsing/toJson](#deserializationserialization-parsingtojson)
 - [Error handling](#error-handling)
 - [Efficiency](#efficiency)
+- [Build Source](#build-source)
 
 ## How to use
 
@@ -203,3 +204,35 @@ try {
 
 Elements and Objects contain only one pointer to the actual data and one enum value.  
 The pointer is situated in a union, while the enum indicates which type of pointer is currently in use. 
+
+## Build Source
+
+To build the source code simply use *CMake* and *Make*
+
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+You can now generate a new single include
+
+```
+cd src/include_generator
+./JsonMaxIncludeGenerator
+```
+
+Or run all tests
+
+```
+cd test
+./JsonMaxTests
+```
+
+Or run one of the examples (e.g. sweets demo)
+
+```
+cd examples/sweets
+./JsonMaxDemoSweets
+```

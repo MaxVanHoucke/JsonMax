@@ -10,17 +10,4 @@ addons:
 script:
   - export CC=gcc-7
   - export CXX=g++-7
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
-
-#  Run tests
-  - cd test
-  - ./JsonMaxTests
-
-#  Check if demos with single include JsonMax.h work
-  - cd ../examples/sweets
-  - ./JsonMaxDemoSweets
-  - cd ../weather
-  - ./JsonMaxDemoWeather
+  - ./test.sh
