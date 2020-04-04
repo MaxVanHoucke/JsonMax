@@ -21,6 +21,6 @@ script:
 
 #  Check if demos with single include JsonMax.h work
   - cd ../examples/sweets
-  - ./examples/sweets/JsonMaxDemoSweets
+  - ./JsonMaxDemoSweets
   - cd ../weather
-  - ./examples/weather/JsonMaxDemoWeather
+  - ./JsonMaxDemoWeather
