@@ -15,4 +15,10 @@ script:
   - cmake ..
   - make
   - cd test
+
+#  Run tests
   - ./JsonMaxTests
+
+#  Check if demos with single include JsonMax.h work
+  - ./JsonMaxDemoSweets
+  - ./JsonMaxDemoWeather
