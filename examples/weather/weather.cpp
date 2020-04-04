@@ -3,13 +3,13 @@
  */
 
 #include <iostream>
-#include "../single_include/JsonMax.h"
+#include "../../single_include/JsonMax.h"
 
 using namespace JsonMax;
 
 int main() {
 
-    std::string fileName = "../../examples/weather.json";
+    std::string fileName = "../../../examples/weather/weather.json";
     Object weather = parseFile(fileName).getObject();
 
     std::cout << "Type: " << weather["type"].getString() << std::endl;

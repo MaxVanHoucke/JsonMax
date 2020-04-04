@@ -1,0 +1,11 @@
+add_library(JsonMax
+        Tools.cpp
+        model/Element.cpp
+        model/Object.cpp
+        model/Pair.cpp
+        model/Type.cpp
+        parser/Parser.cpp
+        parser/ObjectParser.cpp
+        parser/ArrayParser.cpp
+        parser/StringParser.cpp
+        parser/NumberParser.cpp)

@@ -4,8 +4,8 @@
 
 #include "Element.h"
 #include "Object.h"
-#include "Exceptions.h"
-#include "Tools.h"
+#include "../Exceptions.h"
+#include "../Tools.h"
 
 #include <math.h>
 

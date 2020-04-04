@@ -18,6 +18,8 @@ namespace JsonMax {
         /// Returns the string representation of a double, without any trailing zeroes after the comma
         std::string doubleToString(const double&);
 
+        std::string fileToString(const std::string& fileName);
+
     }
 
 }

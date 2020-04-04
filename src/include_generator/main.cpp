@@ -55,11 +55,13 @@ void removeNamespace(std::string& str) {
 
 int main() {
 
-    std::string filename = "../../single_include/JsonMax.h";
+    std::string root = "../../../";
+    std::string filename = root + "single_include/JsonMax.h";
+    std::string license = root + "LICENSE";
     std::ostringstream out;
 
     // Add license comment
-    out << "/*" << std::endl << fileToString("../../LICENSE") << "*/\n" << std::endl;
+    out << "/*" << std::endl << fileToString(license) << "*/\n" << std::endl;
 
     // Includes and include guard
     out << "#ifndef JSONMAX_H\n"
@@ -73,19 +75,27 @@ int main() {
            "#include <fstream>\n\n";
 
     out << "namespace JsonMax {" << std::endl;
-    out << fromHeader("../../src/Object.h");
-    out << fromHeader("../../src/Type.h");
-    out << fromHeader("../../src/Element.h");
-    out << fromHeader("../../src/Pair.h");
-    out << fromHeader("../../src/Parser.h");
-    out << fromHeader("../../src/Tools.h");
-    out << fromHeader("../../src/Exceptions.h");
-    out << fromCpp("../../src/Element.cpp");
-    out << fromCpp("../../src/Pair.cpp");
-    out << fromCpp("../../src/Object.cpp");
-    out << fromCpp("../../src/Parser.cpp");
-    out << fromCpp("../../src/Tools.cpp");
-    out << fromCpp("../../src/Type.cpp");
+    out << fromHeader(root + "src/json_max/model/Object.h");
+    out << fromHeader(root + "src/json_max/model/Type.h");
+    out << fromHeader(root + "src/json_max/model/Element.h");
+    out << fromHeader(root + "src/json_max/model/Pair.h");
+    out << fromHeader(root + "src/json_max/parser/Parser.h");
+    out << fromHeader(root + "src/json_max/Tools.h");
+    out << fromHeader(root + "src/json_max/Exceptions.h");
+    out << fromHeader(root + "src/json_max/parser/ArrayParser.h");
+    out << fromHeader(root + "src/json_max/parser/NumberParser.h");
+    out << fromHeader(root + "src/json_max/parser/ObjectParser.h");
+    out << fromHeader(root + "src/json_max/parser/StringParser.h");
+    out << fromCpp(root + "src/json_max/model/Element.cpp");
+    out << fromCpp(root + "src/json_max/model/Pair.cpp");
+    out << fromCpp(root + "src/json_max/model/Object.cpp");
+    out << fromCpp(root + "src/json_max/parser/Parser.cpp");
+    out << fromCpp(root + "src/json_max/Tools.cpp");
+    out << fromCpp(root + "src/json_max/model/Type.cpp");
+    out << fromCpp(root + "src/json_max/parser/ArrayParser.cpp");
+    out << fromCpp(root + "src/json_max/parser/NumberParser.cpp");
+    out << fromCpp(root + "src/json_max/parser/ObjectParser.cpp");
+    out << fromCpp(root + "src/json_max/parser/StringParser.cpp");
     out << "} // namespace JsonMax" << std::endl;
     out << "#endif //JSONMAX_H" << std::endl;
 

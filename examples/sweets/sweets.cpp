@@ -3,7 +3,7 @@
  */
 
 #include <iostream>
-#include "../single_include/JsonMax.h"
+#include "../../single_include/JsonMax.h"
 
 using namespace JsonMax;
 using namespace std;
