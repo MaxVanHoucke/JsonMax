@@ -60,19 +60,6 @@ bool Parser::endOfParsing() const {
     return index == std::string::npos or index >= endIndex;
 }
 
-
-std::string Parser::extractElementAndAdjustIndex() {
-    moveToNonEmptyPosition();
-    size_t indexOfNextComma = findIndexAfterElement(',');
-    std::string element = json.substr(index, indexOfNextComma - index);
-    if (indexOfNextComma == std::string::npos) {
-        index = std::string::npos;
-    } else {
-        index = indexOfNextComma + 1;
-    }
-    return element;
-}
-
 void Parser::trimEndWhitespace() {
     endIndex = getJson().find_last_not_of(" \t\n", lastPosition());
 }

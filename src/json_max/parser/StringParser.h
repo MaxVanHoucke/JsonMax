@@ -12,6 +12,10 @@
 
 namespace JsonMax {
 
+    /**
+     * Parses JSON strings
+     * Mainly checks if they adhere to the standard
+     */
     class StringParser : public Parser {
     public:
 

@@ -9,7 +9,7 @@ using namespace JsonMax;
 
 TEST_CASE( "Happy days parsing", "[parsing]" ) {
 
-    Object obj = parseFile("../../test/input/example.json").getObject();
+    Object obj = parseFile("../../test/input/correct.json").getObject();
 
     CHECK(obj["string"].getString() == "string");
     CHECK(obj["number"].getInt() == 1);

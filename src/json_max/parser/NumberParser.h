@@ -10,6 +10,7 @@
 
 namespace JsonMax {
 
+    /// Parses integers and doubles
     class NumberParser : public Parser {
     public:
 

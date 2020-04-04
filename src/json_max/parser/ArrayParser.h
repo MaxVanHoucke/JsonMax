@@ -12,6 +12,7 @@
 
 namespace JsonMax {
 
+    /// Parses JSON arrays
     class ArrayParser: public Parser {
     public:
 

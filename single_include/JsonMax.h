@@ -415,31 +415,48 @@ namespace JsonMax {
 
     protected:
 
+        /**
+         *  Returns true if end of parsing is reached
+         *  This also includes being positioned on the last char of the json
+         */
         bool endOfParsing() const;
 
-        std::string extractElementAndAdjustIndex();
-
+        /**
+         * Finds the given symbol in the json, starting from the current position
+         * Skips any element such as an object, array or string
+         * @return the index of the symbol
+         */
         size_t findIndexAfterElement(char symbol);
 
+        /// Returns the stored json
         const std::string& getJson() const;
 
+        /// Remaining characters in the json, includes the current position
         size_t remainingSize() const;
 
+        /// Returns the current position/index
         size_t currentPosition() const;
 
+        /// Returns the char in the json at the current position
         char currentSymbol() const;
 
+        /// Returns the last position/index (which is still part of the json)
         size_t lastPosition() const;
 
+        /// Incrementer for the position
         void incrementPosition();
 
+        /// Setter for the position
         void setPosition(size_t pos);
 
-        void trim();
-
+        /// Trims any whitespace at the end by adjusting the endIndex/lastPosition
         void trimEndWhitespace();
 
+        /// Moves the position to the first element that is not whitespace
         void moveToNonEmptyPosition();
+
+        /// Trims the whitespace around the element
+        void trim();
 
     private:
 
@@ -501,6 +518,7 @@ namespace JsonMax {
 
 
 
+    /// Parses JSON arrays
     class ArrayParser: public Parser {
     public:
 
@@ -512,6 +530,7 @@ namespace JsonMax {
 
 
 
+    /// Parses integers and doubles
     class NumberParser : public Parser {
     public:
 
@@ -527,6 +546,7 @@ namespace JsonMax {
 
 
 
+    /// Parses JSON objects
     class ObjectParser: public Parser {
     public:
 
@@ -544,6 +564,10 @@ namespace JsonMax {
 
 
 
+    /**
+     * Parses JSON strings
+     * Mainly checks if they adhere to the standard
+     */
     class StringParser : public Parser {
     public:
 
@@ -1208,19 +1232,6 @@ void Parser::trim() {
 
 bool Parser::endOfParsing() const {
     return index == std::string::npos or index >= endIndex;
-}
-
-
-std::string Parser::extractElementAndAdjustIndex() {
-    moveToNonEmptyPosition();
-    size_t indexOfNextComma = findIndexAfterElement(',');
-    std::string element = json.substr(index, indexOfNextComma - index);
-    if (indexOfNextComma == std::string::npos) {
-        index = std::string::npos;
-    } else {
-        index = indexOfNextComma + 1;
-    }
-    return element;
 }
 
 void Parser::trimEndWhitespace() {
