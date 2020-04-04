@@ -2,8 +2,8 @@
  * @author Max Van Houcke
  */
 
+#include <iostream>
 #include "Parser.h"
-#include "../Exceptions.h"
 #include "../Tools.h"
 #include "ObjectParser.h"
 #include "ArrayParser.h"
@@ -32,7 +32,7 @@ Element Parser::parse() {
         return Element(true);
     } else if (size == 5 and json.substr(index, size) == "false") {
         return Element(false);
-    } else if (size == 5 and json.substr(index, size) == "null") {
+    } else if (size == 4 and json.substr(index, size) == "null") {
         return Element(nullptr);
     } else if (currentSymbol() == '{') {
         return ObjectParser(json, index, endIndex).parse();
@@ -113,11 +113,11 @@ size_t Parser::findIndexAfterElement(char symbol) {
         }
     }
 
-    return -1;
+    return std::string::npos;
 }
 
 size_t Parser::remainingSize() const {
-    return endIndex - index;
+    return endIndex - index + 1;
 }
 
 const std::string& Parser::getJson() const {

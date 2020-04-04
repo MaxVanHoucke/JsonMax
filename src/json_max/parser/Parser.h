@@ -5,7 +5,6 @@
 #ifndef JSONMAX_JSONPARSER_H
 #define JSONMAX_JSONPARSER_H
 
-#include <stack>
 #include "../model/Element.h"
 #include "../model/Object.h"
 
@@ -25,15 +24,22 @@ namespace JsonMax {
     Element parseFile(const std::string& fileName);
 
 
+    /**
+     * Main Parser class
+     * Can parse any JSON string.
+     * Base class for all other parsers such as ObjectParser etc
+     */
     class Parser {
     public:
 
+        /// Constructor, stores the reference of a JSON string
         explicit Parser(const std::string& str) : Parser(str, 0, str.size() - 1) {}
 
+        /// Constructor, takes JSON but also the start and end positions (end position is including)
         Parser(const std::string& str, size_t start, size_t end) : json(str), index(start), endIndex(end) {}
 
+        /// Parses the stored json
         virtual Element parse();
-
 
     protected:
 

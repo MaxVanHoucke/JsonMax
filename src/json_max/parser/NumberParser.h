@@ -19,7 +19,7 @@ namespace JsonMax {
 
     public:
 
-        double parseNumber() const;
+        static double parseNumber(const std::string& str);
 
     };
 

@@ -1,6 +1,8 @@
 /**
  * @author Max Van Houcke
  */
+
+#include <iostream>
 #include "ObjectParser.h"
 #include "../Exceptions.h"
 
@@ -19,15 +21,19 @@ Element ObjectParser::parse() {
         throw ParseException("Invalid Json: object does not end with '}'");
     }
 
-    Element obj = Object();
+    Object obj = Object();
     while (not endOfParsing()) {
         std::string key = extractKeyAndAdjustIndex();
         checkForDoublePointAndAdjustIndex();
         size_t endIndexOfElement = findIndexAfterElement(',');
         if (endIndexOfElement == std::string::npos) {
-            endIndexOfElement = lastPosition() - 1;
+            endIndexOfElement = lastPosition();
         }
-        obj[key] = Parser(getJson(), currentPosition(), endIndexOfElement).parse();
+        if (key == "array") {
+            std::cout << "";
+        }
+        obj[key] = Parser(getJson(), currentPosition(), endIndexOfElement - 1).parse();
+        setPosition(endIndexOfElement + 1);
     }
     return obj;
 }

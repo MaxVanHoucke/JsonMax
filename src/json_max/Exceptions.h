@@ -5,14 +5,11 @@
 #ifndef JSONMAX_EXCEPTIONS_H
 #define JSONMAX_EXCEPTIONS_H
 
-
-#include "model/Element.h"
-#include "parser/Parser.h"
 #include "model/Type.h"
-
 
 namespace JsonMax {
 
+    class Element;
 
     class TypeException : public std::runtime_error {
     protected:

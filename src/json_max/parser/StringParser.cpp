@@ -12,13 +12,17 @@ Element StringParser::parse() {
     if (not isValidString()) {
         throw ParseException("Invalid Json, string  is invalid as per Json rules.");
     }
-    return getJson().substr(currentPosition(), remainingSize());
+    // pos + 1 and size - 2 to erase quotation
+    return getJson().substr(currentPosition() + 1, remainingSize() - 2);
 }
 
 bool StringParser::isValidString() {
+    size_t startPosition = currentPosition();
+
     if (remainingSize() < 2 or currentSymbol() != '"' or getJson().at(lastPosition()) != '"') {
         return false;
     }
+    incrementPosition();
 
     bool escape = false;
     while (not endOfParsing()) {
@@ -29,11 +33,12 @@ bool StringParser::isValidString() {
             escape = false;
         } else if (currentSymbol() == '\\') {
             escape = true;
-        } else if (currentSymbol() == '\"') {
+        } else if (currentSymbol() == '\"' and currentPosition() != lastPosition()) {
             return false;
         }
         incrementPosition();
     }
+    setPosition(startPosition);
     return true;
 }
 
