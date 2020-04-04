@@ -2,7 +2,10 @@
  * @author Max Van Houcke
  */
 
+#include <fstream>
+#include <sstream>
 #include "Tools.h"
+#include "Exceptions.h"
 
 using namespace JsonMax;
 
@@ -63,4 +66,15 @@ std::string Tools::doubleToString(const double &dou) {
         }
     }
     return str;
+}
+
+
+std::string Tools::fileToString(const std::string &fileName) {
+    std::ifstream in(fileName);
+    if (not in.good()) {
+        throw ParseException("Couldn't open " + fileName);
+    }
+    std::ostringstream stream;
+    stream << in.rdbuf();
+    return stream.str();
 }

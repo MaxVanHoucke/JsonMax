@@ -1,6 +1,6 @@
-//
-// Created by max on 03/04/2020.
-//
+/**
+ * @author Max Van Houcke
+ */
 
 #ifndef JSONMAX_STRINGPARSER_H
 #define JSONMAX_STRINGPARSER_H
@@ -15,9 +15,11 @@ namespace JsonMax {
     class StringParser : public Parser {
     public:
 
-        StringParser(const std::string& str, size_t start, size_t end) : Parser(str, start, end) {}
+        StringParser(const std::string &str, size_t start, size_t end) : Parser(str, start, end) {}
 
         Element parse() override;
+
+    protected:
 
         bool isValidString();
 

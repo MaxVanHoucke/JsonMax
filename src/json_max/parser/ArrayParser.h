@@ -1,6 +1,6 @@
-//
-// Created by max on 03/04/2020.
-//
+/**
+ * @author Max Van Houcke
+ */
 
 #ifndef JSONMAX_ARRAYPARSER_H
 #define JSONMAX_ARRAYPARSER_H

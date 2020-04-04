@@ -1,13 +1,11 @@
-//
-// Created by max on 03/04/2020.
-//
+/**
+ * @author Max Van Houcke
+ */
 
 #ifndef JSONMAX_NUMBERPARSER_H
 #define JSONMAX_NUMBERPARSER_H
 
 #include <string>
-#include "../model/Element.h"
-#include "../model/Object.h"
 #include "Parser.h"
 
 namespace JsonMax {
@@ -18,6 +16,10 @@ namespace JsonMax {
         NumberParser(const std::string &str, size_t start, size_t end) : Parser(str, start, end) {}
 
         Element parse() override;
+
+    public:
+
+        double parseNumber() const;
 
     };
 

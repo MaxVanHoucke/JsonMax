@@ -1,7 +1,6 @@
-//
-// Created by max on 03/04/2020.
-//
-
+/**
+ * @author Max Van Houcke
+ */
 #include "ObjectParser.h"
 #include "../Exceptions.h"
 
@@ -9,14 +8,26 @@ using namespace JsonMax;
 
 Element ObjectParser::parse() {
     trim();
-//    throw ParseException("Invalid Json: object does not end with '}'");
+    if (currentSymbol() != '{') {
+        throw ParseException("Invalid Json: object does not start with '{'");
+
+    }
+
+    incrementPosition();
+
+    if (getJson().at(lastPosition()) != '}') {
+        throw ParseException("Invalid Json: object does not end with '}'");
+    }
 
     Element obj = Object();
     while (not endOfParsing()) {
         std::string key = extractKeyAndAdjustIndex();
         checkForDoublePointAndAdjustIndex();
-        std::string element = extractElementAndAdjustIndex();
-        obj[key] = JsonMax::parse(element);
+        size_t endIndexOfElement = findIndexAfterElement(',');
+        if (endIndexOfElement == std::string::npos) {
+            endIndexOfElement = lastPosition() - 1;
+        }
+        obj[key] = Parser(getJson(), currentPosition(), endIndexOfElement).parse();
     }
     return obj;
 }
@@ -26,31 +37,31 @@ Element ObjectParser::parse() {
 std::string ObjectParser::extractKeyAndAdjustIndex() {
     // First quotation mark
     moveToNonEmptyPosition();
-    if (endOfParsing() or json[index] != '"') {
+    if (endOfParsing() or currentSymbol() != '"') {
         throw ParseException("Invalid Json, missing key in object");
     }
-    index++;
+    incrementPosition();
 
-    int keyStart = index;
+    int keyStart = currentPosition();
 
     // Second quotation mark
-    index = findIndexAfterElement('"');
+    setPosition(findIndexAfterElement('"'));
     if (endOfParsing()) {
         throw ParseException("Invalid Json, key in object has no ending");
     }
-    index++;
+    incrementPosition();
 
-    return json.substr(keyStart, index - keyStart - 1);
+    return getJson().substr(keyStart, currentPosition() - keyStart - 1);
 }
 
 
 
 void ObjectParser::checkForDoublePointAndAdjustIndex() {
     moveToNonEmptyPosition();
-    if (endOfParsing() or json[index] != ':') {
+    if (endOfParsing() or currentSymbol() != ':') {
         throw ParseException("Invalid Json, no ':' between key and value");
     }
-    index++;
+    incrementPosition();
 }
 
 

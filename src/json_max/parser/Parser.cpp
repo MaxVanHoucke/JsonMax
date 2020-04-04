@@ -4,13 +4,12 @@
 
 #include "Parser.h"
 #include "../Exceptions.h"
+#include "../Tools.h"
 #include "ObjectParser.h"
 #include "ArrayParser.h"
 #include "StringParser.h"
 #include "NumberParser.h"
 
-#include <fstream>
-#include <sstream>
 
 using namespace JsonMax;
 
@@ -19,14 +18,13 @@ Element JsonMax::parse(const std::string &json) {
 }
 
 Element JsonMax::parseFile(const std::string &fileName) {
-    std::string fileContent = Parser::fileToString(fileName);
+    std::string fileContent = Tools::fileToString(fileName);
     return parse(fileContent);
 }
 
 Element Parser::parse() {
-    trimEndWhitespace();
-    moveToNonEmptyPosition();
-    size_t size = endIndex - index;
+    trim();
+    size_t size = remainingSize();
 
     if (size == 0) {
         return Element();
@@ -36,11 +34,11 @@ Element Parser::parse() {
         return Element(false);
     } else if (size == 5 and json.substr(index, size) == "null") {
         return Element(nullptr);
-    } else if (json[index] == '{') {
+    } else if (currentSymbol() == '{') {
         return ObjectParser(json, index, endIndex).parse();
-    } else if (json[index] == '[') {
+    } else if (currentSymbol() == '[') {
         return ArrayParser(json, index, endIndex).parse();
-    } else if (json[index] == '"') {
+    } else if (currentSymbol() == '"') {
         return StringParser(json, index, endIndex).parse();
     } else {
         return NumberParser(json, index, endIndex).parse();
@@ -62,15 +60,6 @@ bool Parser::endOfParsing() const {
     return index == std::string::npos or index >= endIndex;
 }
 
-std::string Parser::fileToString(const std::string &fileName) {
-    std::ifstream in(fileName);
-    if (not in.good()) {
-        throw ParseException("Couldn't open " + fileName);
-    }
-    std::ostringstream stream;
-    stream << in.rdbuf();
-    return stream.str();
-}
 
 std::string Parser::extractElementAndAdjustIndex() {
     moveToNonEmptyPosition();
@@ -85,7 +74,7 @@ std::string Parser::extractElementAndAdjustIndex() {
 }
 
 void Parser::trimEndWhitespace() {
-    endIndex = json.find_last_not_of(" \t\n", index, endIndex - index);
+    endIndex = getJson().find_last_not_of(" \t\n", lastPosition());
 }
 
 size_t Parser::findIndexAfterElement(char symbol) {
@@ -125,4 +114,32 @@ size_t Parser::findIndexAfterElement(char symbol) {
     }
 
     return -1;
+}
+
+size_t Parser::remainingSize() const {
+    return endIndex - index;
+}
+
+const std::string& Parser::getJson() const {
+    return json;
+}
+
+size_t Parser::currentPosition() const {
+    return index;
+}
+
+size_t Parser::lastPosition() const {
+    return endIndex;
+}
+
+void Parser::incrementPosition() {
+    index++;
+}
+
+void Parser::setPosition(size_t pos) {
+    index = pos;
+}
+
+char Parser::currentSymbol() const {
+    return getJson().at(currentPosition());
 }

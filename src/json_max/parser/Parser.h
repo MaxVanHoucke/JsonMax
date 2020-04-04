@@ -28,16 +28,14 @@ namespace JsonMax {
     class Parser {
     public:
 
-        Parser(const std::string& str, size_t start, size_t end) : json(str), index(start), endIndex(end) {}
+        explicit Parser(const std::string& str) : Parser(str, 0, str.size() - 1) {}
 
-        explicit Parser(const std::string& str) : json(str), index(0), endIndex(str.size()) {}
+        Parser(const std::string& str, size_t start, size_t end) : json(str), index(start), endIndex(end) {}
 
         virtual Element parse();
 
-        static std::string fileToString(const std::string& fileName);
 
     protected:
-
 
         bool endOfParsing() const;
 
@@ -45,14 +43,35 @@ namespace JsonMax {
 
         size_t findIndexAfterElement(char symbol);
 
+        const std::string& getJson() const;
+
+        size_t remainingSize() const;
+
+        size_t currentPosition() const;
+
+        char currentSymbol() const;
+
+        size_t lastPosition() const;
+
+        void incrementPosition();
+
+        void setPosition(size_t pos);
+
         void trim();
 
         void trimEndWhitespace();
 
         void moveToNonEmptyPosition();
 
+    private:
+
+        /// Reference to the json string parsed
         const std::string& json;
+
+        /// Current index in the json
         size_t index;
+
+        /// One after the last index of the json
         size_t endIndex;
 
     };
