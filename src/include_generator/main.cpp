@@ -75,19 +75,27 @@ int main() {
            "#include <fstream>\n\n";
 
     out << "namespace JsonMax {" << std::endl;
-    out << fromHeader(root + "src/json_max/Object.h");
-    out << fromHeader(root + "src/json_max/Type.h");
-    out << fromHeader(root + "src/json_max/Element.h");
-    out << fromHeader(root + "src/json_max/Pair.h");
+    out << fromHeader(root + "src/json_max/model/Object.h");
+    out << fromHeader(root + "src/json_max/model/Type.h");
+    out << fromHeader(root + "src/json_max/model/Element.h");
+    out << fromHeader(root + "src/json_max/model/Pair.h");
     out << fromHeader(root + "src/json_max/parser/Parser.h");
     out << fromHeader(root + "src/json_max/Tools.h");
     out << fromHeader(root + "src/json_max/Exceptions.h");
-    out << fromCpp(root + "src/json_max/Element.cpp");
-    out << fromCpp(root + "src/json_max/Pair.cpp");
-    out << fromCpp(root + "src/json_max/Object.cpp");
+    out << fromHeader(root + "src/json_max/parser/ArrayParser.h");
+    out << fromHeader(root + "src/json_max/parser/NumberParser.h");
+    out << fromHeader(root + "src/json_max/parser/ObjectParser.h");
+    out << fromHeader(root + "src/json_max/parser/StringParser.h");
+    out << fromCpp(root + "src/json_max/model/Element.cpp");
+    out << fromCpp(root + "src/json_max/model/Pair.cpp");
+    out << fromCpp(root + "src/json_max/model/Object.cpp");
     out << fromCpp(root + "src/json_max/parser/Parser.cpp");
     out << fromCpp(root + "src/json_max/Tools.cpp");
-    out << fromCpp(root + "src/json_max/Type.cpp");
+    out << fromCpp(root + "src/json_max/model/Type.cpp");
+    out << fromCpp(root + "src/json_max/parser/ArrayParser.cpp");
+    out << fromCpp(root + "src/json_max/parser/NumberParser.cpp");
+    out << fromCpp(root + "src/json_max/parser/ObjectParser.cpp");
+    out << fromCpp(root + "src/json_max/parser/StringParser.cpp");
     out << "} // namespace JsonMax" << std::endl;
     out << "#endif //JSONMAX_H" << std::endl;
 

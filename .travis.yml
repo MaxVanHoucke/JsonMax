@@ -14,11 +14,10 @@ script:
   - cd build
   - cmake ..
   - make
-  - cd test
 
 #  Run tests
-  - ./JsonMaxTests
+  - ./test/JsonMaxTests
 
 #  Check if demos with single include JsonMax.h work
-  - ./JsonMaxDemoSweets
-  - ./JsonMaxDemoWeather
+  - ./examples/sweets/JsonMaxDemoSweets
+  - ./examples/weather/JsonMaxDemoWeather

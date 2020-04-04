@@ -395,31 +395,64 @@ namespace JsonMax {
      */
     Element parseFile(const std::string& fileName);
 
-    /// Helper function for parsing
-    namespace Parser {
 
-        /// Finds the position of the next symbol given that is not in a json string
-        int findIndex(size_t start, char symbol, const std::string &string);
+    /**
+     * Main Parser class
+     * Can parse any JSON string.
+     * Base class for all other parsers such as ObjectParser etc
+     */
+    class Parser {
+    public:
 
-        /// When giving '{' it finds the next '}' and returns the position
-        int findEnding(size_t start, char symbol, const std::string &string);
+        /// Constructor, stores the reference of a JSON string
+        explicit Parser(const std::string& str) : Parser(str, 0, str.size() - 1) {}
 
-        /// Checks if it's a valid json string
-        bool validateString(const std::string &string);
+        /// Constructor, takes JSON but also the start and end positions (end position is including)
+        Parser(const std::string& str, size_t start, size_t end) : json(str), index(start), endIndex(end) {}
 
-        /// Checks if it's a valid json number
-        bool validateNumber(const std::string &number);
+        /// Parses the stored json
+        virtual Element parse();
 
-        /// Trims the string, removes whitespace etc
-        std::string trim(const std::string &string);
+    protected:
 
-        /// Parses an object without the { and }
-        Object parseObject(const std::string &object);
+        bool endOfParsing() const;
 
-        /// Parses an array without the [ and ]
-        Element parseArray(const std::string &array);
+        std::string extractElementAndAdjustIndex();
 
-    }
+        size_t findIndexAfterElement(char symbol);
+
+        const std::string& getJson() const;
+
+        size_t remainingSize() const;
+
+        size_t currentPosition() const;
+
+        char currentSymbol() const;
+
+        size_t lastPosition() const;
+
+        void incrementPosition();
+
+        void setPosition(size_t pos);
+
+        void trim();
+
+        void trimEndWhitespace();
+
+        void moveToNonEmptyPosition();
+
+    private:
+
+        /// Reference to the json string parsed
+        const std::string& json;
+
+        /// Current index in the json
+        size_t index;
+
+        /// One after the last index of the json
+        size_t endIndex;
+
+    };
 
 
 
@@ -431,53 +464,100 @@ namespace JsonMax {
         /// Returns the string representation of a double, without any trailing zeroes after the comma
         std::string doubleToString(const double&);
 
+        std::string fileToString(const std::string& fileName);
+
     }
 
 
 
+    class Element;
 
-    class TypeException : public std::exception {
-    public:
-
-        friend class Element;
-
-        virtual const char *what() const throw() {
-            return msg.c_str();
-        }
-
+    class TypeException : public std::runtime_error {
     protected:
 
-        TypeException(Type actual, Type expected) {
-            msg = "Casting an element of type " + toString(actual) + " to " +
-                  toString(expected) + " is not possible.";
+        TypeException(Type actual, Type expected) : std::runtime_error(
+                "Casting an element of type " + toString(actual) + " to " +
+                toString(expected) + " is not possible.") {
         }
 
-        explicit TypeException(const std::string &str) {
-            msg = str;
-        }
+        explicit TypeException(const std::string &str) : std::runtime_error(str) {}
 
-        std::string msg;
+        friend class Element;
+    };
+
+
+    class ParseException : public std::runtime_error {
+    protected:
+
+        friend Element parse(const std::string &);
+
+        friend Element parseFile(const std::string &);
+
+        friend class Parser;
+
+    public:
+        explicit ParseException(const std::string &message) : std::runtime_error(message) {}
+    };
+
+
+
+    class ArrayParser: public Parser {
+    public:
+
+        ArrayParser(const std::string& str, size_t start, size_t end) : Parser(str, start, end) {}
+
+        Element parse() override;
 
     };
 
 
-    class ParseException : public std::exception {
+
+    class NumberParser : public Parser {
     public:
 
-        friend Element parse(const std::string &);
-        friend Element parseFile(const std::string &);
-        friend Element Parser::parseArray(const std::string&);
-        friend Object Parser::parseObject(const std::string&);
+        NumberParser(const std::string &str, size_t start, size_t end) : Parser(str, start, end) {}
 
-        virtual const char *what() const throw() {
-            return msg.c_str();
-        }
+        Element parse() override;
+
+    public:
+
+        static double parseNumber(const std::string& str);
+
+    };
+
+
+
+    class ObjectParser: public Parser {
+    public:
+
+        ObjectParser(const std::string& str, size_t start, size_t end) : Parser(str, start, end) {}
+
+        Element parse() override;
 
     protected:
 
-        ParseException(const char *message) : msg(message) {}
+        std::string extractKeyAndAdjustIndex();
 
-        std::string msg;
+        void checkForDoublePointAndAdjustIndex();
+
+    };
+
+
+
+    class StringParser : public Parser {
+    public:
+
+        StringParser(const std::string &str, size_t start, size_t end) : Parser(str, start, end) {}
+
+        Element parse() override;
+
+    protected:
+
+        bool isValidString();
+
+        bool isHexadecimalCorrect();
+
+        bool isEscapedPartCorrect();
 
     };
 
@@ -1084,385 +1164,134 @@ void Object::clear() {
 
 
 Element parse(const std::string &json) {
-    std::string element = Parser::trim(json);
-
-    if (element == "true") {
-        return Element(true);
-    } else if (element == "false") {
-        return Element(false);
-    } else if (element == "null") {
-        return Element(nullptr);
-    }
-
-    Element output;
-
-    if (element.empty()) {
-        return Element();
-    }
-
-    if (element[0] == '{') {
-        if (element.back() != '}') {
-            throw ParseException("Invalid Json: object does not end with '}'");
-        }
-        return Parser::parseObject(element.substr(1, element.size() - 2));
-    }
-
-    if (element[0] == '[') {
-        if (element.back() != ']') {
-            throw ParseException("Invalid Json: array does not end with '}'");
-        }
-        return Parser::parseArray(element.substr(1, element.size() - 2));
-    }
-
-    if (Parser::validateNumber(element)) {
-        try {
-            double number = std::stod(element);
-            if (element.find('.') == std::string::npos) {
-                return Element((int) number);
-            } else return Element(number);
-        } catch (std::out_of_range &e) {
-            throw ParseException(
-                    std::string("Cannot parse, number '" + element + "' is out of range.").c_str());
-        } catch (std::invalid_argument &e) {
-            throw ParseException(std::string("Invalid Json, number '" + element + "' is not valid.").c_str());
-        }
-    }
-
-    if (element[0] == '"') {
-        if (element.back() != '"') {
-            throw ParseException(std::string("Invalid Json, string " + element + " has no ending.").c_str());
-        }
-        if (!Parser::validateString(element.substr(1, element.size() - 2))) {
-            throw ParseException(
-                    std::string("Invalid Json, string " + element + " is invalid as per Json rules.").c_str());
-
-        }
-        return Element(element.substr(1, element.size() - 2));
-    }
-
-    throw ParseException(
-            std::string("Invalid Json, element " + element + " is not a supported type.").c_str());
+    return Parser(json).parse();
 }
-
 
 Element parseFile(const std::string &fileName) {
-    std::ifstream in(fileName);
+    std::string fileContent = Tools::fileToString(fileName);
+    return parse(fileContent);
+}
 
-    if (not in.good()) {
-        throw ParseException(std::string("Couldn't open " + fileName).c_str());
+Element Parser::parse() {
+    trim();
+    size_t size = remainingSize();
+
+    if (size == 0) {
+        return Element();
+    } else if (size == 4 and json.substr(index, size) == "true") {
+        return Element(true);
+    } else if (size == 5 and json.substr(index, size) == "false") {
+        return Element(false);
+    } else if (size == 4 and json.substr(index, size) == "null") {
+        return Element(nullptr);
+    } else if (currentSymbol() == '{') {
+        return ObjectParser(json, index, endIndex).parse();
+    } else if (currentSymbol() == '[') {
+        return ArrayParser(json, index, endIndex).parse();
+    } else if (currentSymbol() == '"') {
+        return StringParser(json, index, endIndex).parse();
+    } else {
+        return NumberParser(json, index, endIndex).parse();
     }
+}
 
-    std::ostringstream stream;
-    stream << in.rdbuf();
-
-    return parse(stream.str());
+void Parser::moveToNonEmptyPosition() {
+    index = json.find_first_not_of(" \t\n", index);
 }
 
 
-int Parser::findIndex(size_t start, char symbol, const std::string &string) {
+void Parser::trim() {
+    trimEndWhitespace();
+    moveToNonEmptyPosition();
+}
+
+
+bool Parser::endOfParsing() const {
+    return index == std::string::npos or index >= endIndex;
+}
+
+
+std::string Parser::extractElementAndAdjustIndex() {
+    moveToNonEmptyPosition();
+    size_t indexOfNextComma = findIndexAfterElement(',');
+    std::string element = json.substr(index, indexOfNextComma - index);
+    if (indexOfNextComma == std::string::npos) {
+        index = std::string::npos;
+    } else {
+        index = indexOfNextComma + 1;
+    }
+    return element;
+}
+
+void Parser::trimEndWhitespace() {
+    endIndex = getJson().find_last_not_of(" \t\n", lastPosition());
+}
+
+size_t Parser::findIndexAfterElement(char symbol) {
     bool skip = false;
     bool inString = false;
 
-    for (size_t i = start; i < string.size(); i++) {
+    int arrayCounter = 0;
+    int objectCounter = 0;
+    for (size_t i = index; i < json.size(); i++) {
+        char current = json[i];
+
         if (skip) {
             skip = false;
             continue;
-        }
-
-        if (string[i] == '\\') {
-            skip = true;
+        } else if (inString) {
+            inString = current != '"';
             continue;
-        } else if (string[i] == '"') {
-            inString = !inString;
         }
 
-        if (string[i] == symbol and (!inString or symbol == '"')) {
-            return int(i);
+        if (current == symbol and objectCounter == 0 and arrayCounter == 0) {
+            return i;
+        }
+
+        if (current == '\\') {
+            skip = true;
+        } else if (current == '"') {
+            inString = true;
+        } else if (current == '{') {
+            objectCounter++;
+        } else if (current == '}') {
+            objectCounter--;
+        } else if (current == '[') {
+            arrayCounter++;
+        } else if (current == ']') {
+            arrayCounter--;
         }
     }
 
-    return -1;
+    return std::string::npos;
 }
 
-bool Parser::validateNumber(const std::string &number) {
-    unsigned int index = 0;
-    bool valid = false;
-
-    try {
-        if (number.at(0) == '-') {
-            index++;
-        }
-
-        if (number.at(index) == '0') {
-            index++;
-            goto point;
-        } else if (isdigit(number.at(index))) {
-            valid = true;
-            while (isdigit(number.at(index))) {
-                index++;
-            }
-        } else return false;
-
-        point:
-        valid = true;
-
-        if (number.at(index) == '.') {
-            index++;
-            valid = false;
-            while (isdigit(number.at(index))) {
-                valid = true;
-                index++;
-            }
-        }
-
-        if (number.at(index) == 'e' or number.at(index) == 'E') {
-            index++;
-            valid = false;
-        } else return false;
-
-        if (number.at(index) == '+' or number.at(index) == '-') {
-            index++;
-        }
-
-        if (!isdigit(number.at(index))) {
-            return false;
-        }
-
-        while (index != number.size()) {
-            if (!isdigit(number.at(index))) {
-                return false;
-            }
-            index++;
-        }
-
-        return true;
-    }
-    catch (std::out_of_range &exception) {
-        return valid;
-    }
+size_t Parser::remainingSize() const {
+    return endIndex - index + 1;
 }
 
-bool Parser::validateString(const std::string &string) {
-    bool escape = false;
-
-    for (int i = 0; i < string.size(); i++) {
-        char symbol = string[i];
-
-        if (escape) {
-            if (not(symbol == '"' or symbol == '\\'
-                    or symbol == '/' or symbol == 'b'
-                    or symbol == 'f' or symbol == 'n'
-                    or symbol == 'r' or symbol == 't'
-                    or symbol == 'u'))
-                return false;
-
-            if (symbol == 'u') {
-                if (i + 4 >= string.size()) {
-                    return false;
-                }
-                std::string hexa = string.substr(i + 1, 4);
-                if (hexa.find_first_not_of("0123456789abcdefABCDEF") != std::string::npos) {
-                    return false;
-                }
-            }
-
-            escape = false;
-        } else if (symbol == '\\') {
-            escape = true;
-        } else if (symbol == '\"') {
-            return false;
-        }
-    }
-    return true;
-}
-
-std::string Parser::trim(const std::string &str) {
-    const auto strBegin = str.find_first_not_of(" \t\n");
-    if (strBegin == std::string::npos) return "";
-    const auto strEnd = str.find_last_not_of(" \t\n");
-    const auto strRange = strEnd - strBegin + 1;
-    return str.substr(strBegin, strRange);
-}
-
-Element Parser::parseArray(const std::string &array) {
-    std::string element = trim(array);
-
-    if (element.empty()) {
-        return Element(std::vector<Element>());
-    }
-
-    std::vector<Element> jsonArray;
-
-    size_t index = 0;
-    while (true) {
-
-        index = element.find_first_not_of(" \t\n", index);
-
-        if (index == std::string::npos) {
-            break;
-        }
-
-        if (element[index] == '{') {
-            int i = findEnding(index, '{', element);
-            if (i == -1) {
-                throw ParseException("Invalid Json: object does not end with '}'");
-            }
-
-            jsonArray.push_back(parse(element.substr(index, i - index + 1)));
-            index = i + 1;
-        } else if (element[index] == '[') {
-            int i = findEnding(index, '[', element);
-            if (i == -1) {
-                throw ParseException("Invalid Json: array does not end with ']'");
-            }
-
-            jsonArray.push_back(parse(element.substr(index, i - index + 1)));
-            index = i + 1;
-        } else {
-            int a = findIndex(index, ',', element);
-            if (a == -1) {
-                a = element.size();
-            }
-
-            jsonArray.push_back(parse(element.substr(index, a - index)));
-            index = size_t(a);
-        }
-
-        index = element.find_first_not_of(" ", index);
-
-        if (index == std::string::npos) {
-            break;
-        }
-        if (element[index] != ',') {
-            throw ParseException("Invalid Json: invalid characters after value");
-        }
-
-        index++;
-    }
-
-    return Element(jsonArray);
-}
-
-Object Parser::parseObject(const std::string &object) {
-    std::string element = trim(object);
-
-    if (element.empty()) {
-        return Object();
-    }
-
-    Object json;
-
-    size_t index = 0;
-    while (true) {
-
-        index = element.find_first_not_of(" \t\n", index);
-        if (index == std::string::npos or element[index] != '"') {
-            throw ParseException(std::string("Invalid Json, key in object missing").c_str());
-        }
-
-        int i = findIndex(index + 1, '"', element);
-        if (i == -1) {
-            throw ParseException(std::string("Invalid Json, key in object has no ending").c_str());
-        }
-
-        std::string key = element.substr(index + 1, i - index - 1);
-
-        index = size_t(i) + 1;
-        index = element.find_first_not_of(" \t\n", index);
-
-        if (index == std::string::npos or element[index] != ':') {
-            throw ParseException(std::string("Invalid Json, no ':' between key and value").c_str());
-        }
-
-        index++;
-
-        index = element.find_first_not_of(" \t\n", index);
-
-        if (index == std::string::npos) {
-            throw ParseException(std::string("Invalid Json, key without value.").c_str());
-        }
-
-        if (element[index] == '{') {
-            int i = findEnding(index, '{', element);
-            if (i == -1) {
-                throw ParseException("Invalid Json: object does not end with '}'");
-            }
-
-            json[key] = parse(element.substr(index, i - index + 1));
-            index = i + 1;
-        } else if (element[index] == '[') {
-            int i = findEnding(index, '[', element);
-            if (i == -1) {
-                throw ParseException("Invalid Json: array does not end with ']'");
-            }
-
-            json[key] = parse(element.substr(index, i - index + 1));
-            index = i + 1;
-        } else {
-            int a = findIndex(index, ',', element);
-            if (a == -1) {
-                a = element.size();
-            }
-
-
-            json[key] = parse(element.substr(index, a - index));
-            index = size_t(a);
-        }
-
-        index = element.find_first_not_of(" ", index);
-
-        if (index == std::string::npos) {
-            break;
-        }
-        if (element[index] != ',') {
-            throw ParseException("Invalid Json: invalid characters after value");
-        }
-
-        index++;
-    }
-
+const std::string& Parser::getJson() const {
     return json;
 }
 
+size_t Parser::currentPosition() const {
+    return index;
+}
 
-int Parser::findEnding(size_t start, char symbol, const std::string &string) {
-    bool skip = false;
-    bool inString = false;
+size_t Parser::lastPosition() const {
+    return endIndex;
+}
 
-    char endSymbol;
-    if (symbol == '{') {
-        endSymbol = '}';
-    } else if (symbol == '[') {
-        endSymbol = ']';
-    }
+void Parser::incrementPosition() {
+    index++;
+}
 
-    int endCount = 0;
-    int startCount = 0;
+void Parser::setPosition(size_t pos) {
+    index = pos;
+}
 
-    for (int i = start; i < string.size(); i++) {
-        char sym = string[i];
-
-        if (skip) {
-            skip = false;
-            continue;
-        }
-
-        if (sym == '\\') {
-            skip = true;
-            continue;
-        } else if (sym == '"') {
-            inString = !inString;
-        } else if (sym == symbol and !inString) {
-            startCount++;
-        } else if (sym == endSymbol and !inString) {
-            endCount++;
-
-            if (startCount == endCount) {
-                return i;
-            }
-        }
-    }
-    return -1;
+char Parser::currentSymbol() const {
+    return getJson().at(currentPosition());
 }
 
 
@@ -1475,6 +1304,7 @@ std::string Tools::indent(const std::string &json, int indentation) {
     for (size_t i = 0; i < json.size(); i++) {
         char symbol = json[i];
 
+        // Two special cases, escaped symbol or in string
         if (escape) {
             output += symbol;
             escape = false;
@@ -1485,45 +1315,30 @@ std::string Tools::indent(const std::string &json, int indentation) {
             continue;
         }
 
-
+        // Non empty object or array started
         if ((symbol == '{' and json[i + 1] != '}') or (symbol == '[' and json[i + 1] != ']')) {
             spaces += indentation;
             output += std::string(1, symbol) + "\n" + std::string(spaces, ' ');
-        } else if ((symbol == '}' and json[i - 1] != '{') or (symbol == ']' and json[i - 1] != '[')) {
+        }
+        // Non empty object or array ended
+        else if ((symbol == '}' and json[i - 1] != '{') or (symbol == ']' and json[i - 1] != '[')) {
             spaces -= indentation;
             output += "\n" + std::string(spaces, ' ') + std::string(1, symbol);
-        } else if (symbol == ',') {
+        }
+        // Comma so new line and indent
+        else if (symbol == ',') {
             output += ",\n" + std::string(spaces - 1, ' ');
-        } else {
+        }
+        // Other symbols
+        else {
+            // Check if escape or string started
             if (symbol == '\\') {
                 escape = true;
             } else if (symbol == '"') {
                 inString = true;
             }
-
             output += symbol;
         }
-
-        continue;
-
-        if (symbol == '\\' and !escape) {
-            output += symbol;
-            escape = true;
-            continue;
-        } else if (symbol == '\"' and !escape) {
-            output += symbol;
-            inString = !inString;
-        } else if ((symbol == '{' or symbol == '[') and !inString) {
-            spaces += indentation;
-            output += std::string(1, symbol) + "\n" + std::string(spaces, ' ');
-        } else if ((symbol == '}' or symbol == ']') and !inString) {
-            spaces -= indentation;
-            output += "\n" + std::string(spaces, ' ') + std::string(1, symbol);
-        } else if (symbol == ',' and !inString) {
-            output += ",\n" + std::string(spaces - 1, ' ');
-        } else output += symbol;
-
-        escape = false;
     }
 
     return output;
@@ -1537,6 +1352,17 @@ std::string Tools::doubleToString(const double &dou) {
         }
     }
     return str;
+}
+
+
+std::string Tools::fileToString(const std::string &fileName) {
+    std::ifstream in(fileName);
+    if (not in.good()) {
+        throw ParseException("Couldn't open " + fileName);
+    }
+    std::ostringstream stream;
+    stream << in.rdbuf();
+    return stream.str();
 }
 
 
@@ -1559,6 +1385,181 @@ std::string toString(Type type) {
         case UNINITIALIZED:
             return "UNINITIALIZED";
     }
+}
+
+
+Element ArrayParser::parse() {
+    trim();
+    if (currentSymbol() != '[') {
+        throw ParseException("Invalid Json: object does not start with '{'");
+
+    }
+
+    incrementPosition();
+    
+    if (getJson().at(lastPosition()) != ']') {
+        std::cout << getJson().substr(currentPosition(), remainingSize()) << std::endl;
+        throw ParseException("Invalid Json: array does not end with ']'");
+    }
+
+
+
+    Array array;
+    while (not endOfParsing()) {
+        size_t endIndexOfElement = findIndexAfterElement(',');
+        if (endIndexOfElement == std::string::npos) {
+            endIndexOfElement = lastPosition();
+        }
+        array.push_back(Parser(getJson(), currentPosition(), endIndexOfElement - 1).parse());
+        setPosition(endIndexOfElement + 1);
+    }
+    return array;
+}
+
+
+Element NumberParser::parse() {
+    trim();
+    std::string str = getJson().substr(currentPosition(), remainingSize());
+    double number = parseNumber(str);
+    if (str.find('.') == std::string::npos) {
+        return Element((int) number);
+    } else {
+        return Element(number);
+    }
+}
+
+double NumberParser::parseNumber(const std::string& str) {
+    try {
+        return std::stod(str);
+    } catch (std::out_of_range &e) {
+        throw ParseException("Cannot parse, number '" + str + "' is out of range.");
+    } catch (std::invalid_argument &e) {
+        throw ParseException("Invalid Json, '" + str + "' is not valid.");
+    }
+}
+
+
+Element ObjectParser::parse() {
+    trim();
+    if (currentSymbol() != '{') {
+        throw ParseException("Invalid Json: object does not start with '{'");
+
+    }
+
+    incrementPosition();
+
+    if (getJson().at(lastPosition()) != '}') {
+        throw ParseException("Invalid Json: object does not end with '}'");
+    }
+
+    Object obj = Object();
+    while (not endOfParsing()) {
+        std::string key = extractKeyAndAdjustIndex();
+        checkForDoublePointAndAdjustIndex();
+        size_t endIndexOfElement = findIndexAfterElement(',');
+        if (endIndexOfElement == std::string::npos) {
+            endIndexOfElement = lastPosition();
+        }
+        if (key == "array") {
+            std::cout << "";
+        }
+        obj[key] = Parser(getJson(), currentPosition(), endIndexOfElement - 1).parse();
+        setPosition(endIndexOfElement + 1);
+    }
+    return obj;
+}
+
+
+
+std::string ObjectParser::extractKeyAndAdjustIndex() {
+    // First quotation mark
+    moveToNonEmptyPosition();
+    if (endOfParsing() or currentSymbol() != '"') {
+        throw ParseException("Invalid Json, missing key in object");
+    }
+    incrementPosition();
+
+    int keyStart = currentPosition();
+
+    // Second quotation mark
+    setPosition(findIndexAfterElement('"'));
+    if (endOfParsing()) {
+        throw ParseException("Invalid Json, key in object has no ending");
+    }
+    incrementPosition();
+
+    return getJson().substr(keyStart, currentPosition() - keyStart - 1);
+}
+
+
+
+void ObjectParser::checkForDoublePointAndAdjustIndex() {
+    moveToNonEmptyPosition();
+    if (endOfParsing() or currentSymbol() != ':') {
+        throw ParseException("Invalid Json, no ':' between key and value");
+    }
+    incrementPosition();
+}
+
+
+
+
+
+Element StringParser::parse() {
+    trim();
+    if (not isValidString()) {
+        throw ParseException("Invalid Json, string  is invalid as per Json rules.");
+    }
+    // pos + 1 and size - 2 to erase quotation
+    return getJson().substr(currentPosition() + 1, remainingSize() - 2);
+}
+
+bool StringParser::isValidString() {
+    size_t startPosition = currentPosition();
+
+    if (remainingSize() < 2 or currentSymbol() != '"' or getJson().at(lastPosition()) != '"') {
+        return false;
+    }
+    incrementPosition();
+
+    bool escape = false;
+    while (not endOfParsing()) {
+        if (escape) {
+            if (not isEscapedPartCorrect()) {
+                return false;
+            }
+            escape = false;
+        } else if (currentSymbol() == '\\') {
+            escape = true;
+        } else if (currentSymbol() == '\"' and currentPosition() != lastPosition()) {
+            return false;
+        }
+        incrementPosition();
+    }
+    setPosition(startPosition);
+    return true;
+}
+
+
+bool StringParser::isHexadecimalCorrect() {
+    if (currentPosition() + 4 > lastPosition()) {
+        return false;
+    }
+    incrementPosition();
+    const static std::string hexa = "0123456789abcdefABCDEF";
+    size_t result = getJson().find_first_not_of(hexa.c_str(), currentPosition(), 4);
+    return result != std::string::npos;
+}
+
+
+bool StringParser::isEscapedPartCorrect() {
+    // Allowed chars after escape
+    const static std::string allowed = "\"\\/bfnrtu";
+    if (allowed.find(currentSymbol()) == std::string::npos) {
+        return false;
+    }
+    // u has to be followed by 4 hexadecimal units
+    return currentSymbol() != 'u' or isHexadecimalCorrect();
 }
 } // namespace JsonMax
 #endif //JSONMAX_H
