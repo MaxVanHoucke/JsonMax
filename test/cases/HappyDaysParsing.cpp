@@ -51,3 +51,7 @@ TEST_CASE( "Happy days parsing strings", "[parsing]" ) {
         CHECK_NOTHROW(c);
     }
 }
+
+TEST_CASE( "Happy days parsing large file", "[parsing]" ) {
+    CHECK_NOTHROW(parseFile("../../test/input/large.json").getArray());
+}

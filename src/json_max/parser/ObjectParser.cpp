@@ -33,7 +33,7 @@ std::string ObjectParser::extractKeyAndAdjustIndex() {
     // First quotation mark
     moveToNonEmptyPosition();
     if (endOfParsing() or currentSymbol() != '"') {
-        throw ParseException("Invalid Json, missing key in object");
+        throwException("Invalid Json, missing key in object");
     }
     incrementPosition();
 
@@ -42,7 +42,7 @@ std::string ObjectParser::extractKeyAndAdjustIndex() {
     // Second quotation mark
     setPosition(findIndexAfterElement('"'));
     if (endOfParsing()) {
-        throw ParseException("Invalid Json, key in object has no ending");
+        throwException("Invalid Json, key in object has no ending");
     }
     incrementPosition();
 
@@ -54,18 +54,18 @@ std::string ObjectParser::extractKeyAndAdjustIndex() {
 void ObjectParser::checkForDoublePointAndAdjustIndex() {
     moveToNonEmptyPosition();
     if (endOfParsing() or currentSymbol() != ':') {
-        throw ParseException("Invalid Json, no ':' between key and value");
+        throwException("Invalid Json, no ':' between key and value");
     }
     incrementPosition();
 }
 
 void ObjectParser::checkObjectSemantics() {
     if (currentSymbol() != '{') {
-        throw ParseException("Invalid Json: object does not start with '{'");
+        throwException("Invalid Json: object does not start with '{'");
 
     }
     if (getJson().at(lastPosition()) != '}') {
-        throw ParseException("Invalid Json: object does not end with '}'");
+        throwException("Invalid Json: object does not end with '}'");
     }
 }
 

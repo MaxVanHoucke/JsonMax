@@ -17,7 +17,7 @@ namespace JsonMax {
         std::string fileToString(const std::string &fileName) {
             std::ifstream in(fileName);
             if (not in.good()) {
-                throw ParseException("Couldn't open " + fileName);
+                throw ParseException("Couldn't open " + fileName, "", 0);
             }
             std::ostringstream stream;
             stream << in.rdbuf();

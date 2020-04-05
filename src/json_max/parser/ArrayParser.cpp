@@ -28,10 +28,9 @@ Element ArrayParser::parse() {
 
 void ArrayParser::checkArraySemantics() {
     if (currentSymbol() != '[') {
-        throw ParseException("Invalid Json: object does not start with '{'");
-
+        throwException("Array does not start with '{'");
     }
     if (getJson().at(lastPosition()) != ']') {
-        throw ParseException("Invalid Json: array does not end with ']'");
+        throwException("Array does not end with ']'");
     }
 }

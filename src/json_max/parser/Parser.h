@@ -56,6 +56,9 @@ namespace JsonMax {
          */
         size_t findIndexAfterElement(char symbol);
 
+        /// Throws a parsing exception with a given message
+        void throwException(const std::string& msg) const;
+
         /// Returns the stored json
         const std::string& getJson() const;
 

@@ -79,7 +79,7 @@ size_t Parser::findIndexAfterElement(char symbol) {
 
     int arrayCounter = 0;
     int objectCounter = 0;
-    for (size_t i = index; i < json.size(); i++) {
+    for (size_t i = index; i <= lastPosition(); i++) {
         char current = json[i];
 
         if (skip) {
@@ -138,4 +138,8 @@ void Parser::setPosition(size_t pos) {
 
 char Parser::currentSymbol() const {
     return getJson().at(currentPosition());
+}
+
+void Parser::throwException(const std::string &msg) const {
+    throw ParseException(msg, getJson(), currentPosition());
 }
