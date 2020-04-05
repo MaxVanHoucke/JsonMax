@@ -415,7 +415,19 @@ namespace JsonMax {
     class ParseException : public std::runtime_error {
     public:
 
-        explicit ParseException(const std::string &message) : std::runtime_error(message) {}
+        explicit ParseException(const std::string &message, const std::string &json, size_t pos)
+                : std::runtime_error(craftMessage(message, json, pos)) {}
+
+        static std::string craftMessage(const std::string &message, const std::string &json, size_t pos) {
+            int line = 1;
+            int lineStart = 0;
+            for (int i = 0; i < pos; i++) {
+                if (json[i] == '\n') {
+                    line++;
+                }
+            }
+            return "Error on Line " + std::to_string(line) + ": " + message;
+        }
 
         friend class Parser;
 
@@ -428,7 +440,7 @@ namespace JsonMax {
         std::string fileToString(const std::string &fileName) {
             std::ifstream in(fileName);
             if (not in.good()) {
-                throw ParseException("Couldn't open " + fileName);
+                throw ParseException("Couldn't open " + fileName, "", 0);
             }
             std::ostringstream stream;
             stream << in.rdbuf();
@@ -484,6 +496,9 @@ namespace JsonMax {
          * @return the index of the symbol
          */
         size_t findIndexAfterElement(char symbol);
+
+        /// Throws a parsing exception with a given message
+        void throwException(const std::string& msg) const;
 
         /// Returns the stored json
         const std::string& getJson() const;
@@ -556,7 +571,7 @@ namespace JsonMax {
 
     public:
 
-        static double parseNumber(const std::string& str);
+        double parseNumber(const std::string& str);
 
     };
 
@@ -1352,7 +1367,7 @@ size_t Parser::findIndexAfterElement(char symbol) {
 
     int arrayCounter = 0;
     int objectCounter = 0;
-    for (size_t i = index; i < json.size(); i++) {
+    for (size_t i = index; i <= lastPosition(); i++) {
         char current = json[i];
 
         if (skip) {
@@ -1413,6 +1428,10 @@ char Parser::currentSymbol() const {
     return getJson().at(currentPosition());
 }
 
+void Parser::throwException(const std::string &msg) const {
+    throw ParseException(msg, getJson(), currentPosition());
+}
+
 
 Element ArrayParser::parse() {
     trim();
@@ -1434,11 +1453,10 @@ Element ArrayParser::parse() {
 
 void ArrayParser::checkArraySemantics() {
     if (currentSymbol() != '[') {
-        throw ParseException("Invalid Json: object does not start with '{'");
-
+        throwException("Array does not start with '{'");
     }
     if (getJson().at(lastPosition()) != ']') {
-        throw ParseException("Invalid Json: array does not end with ']'");
+        throwException("Array does not end with ']'");
     }
 }
 
@@ -1458,9 +1476,9 @@ double NumberParser::parseNumber(const std::string& str) {
     try {
         return std::stod(str);
     } catch (std::out_of_range &e) {
-        throw ParseException("Cannot parse, number '" + str + "' is out of range.");
+        throwException("Cannot parse, number '" + str + "' is out of range.");
     } catch (std::invalid_argument &e) {
-        throw ParseException("Invalid Json, '" + str + "' is not valid.");
+        throwException("Invalid Json, '" + str + "' is not valid.");
     }
 }
 
@@ -1490,7 +1508,7 @@ std::string ObjectParser::extractKeyAndAdjustIndex() {
     // First quotation mark
     moveToNonEmptyPosition();
     if (endOfParsing() or currentSymbol() != '"') {
-        throw ParseException("Invalid Json, missing key in object");
+        throwException("Invalid Json, missing key in object");
     }
     incrementPosition();
 
@@ -1499,7 +1517,7 @@ std::string ObjectParser::extractKeyAndAdjustIndex() {
     // Second quotation mark
     setPosition(findIndexAfterElement('"'));
     if (endOfParsing()) {
-        throw ParseException("Invalid Json, key in object has no ending");
+        throwException("Invalid Json, key in object has no ending");
     }
     incrementPosition();
 
@@ -1511,18 +1529,18 @@ std::string ObjectParser::extractKeyAndAdjustIndex() {
 void ObjectParser::checkForDoublePointAndAdjustIndex() {
     moveToNonEmptyPosition();
     if (endOfParsing() or currentSymbol() != ':') {
-        throw ParseException("Invalid Json, no ':' between key and value");
+        throwException("Invalid Json, no ':' between key and value");
     }
     incrementPosition();
 }
 
 void ObjectParser::checkObjectSemantics() {
     if (currentSymbol() != '{') {
-        throw ParseException("Invalid Json: object does not start with '{'");
+        throwException("Invalid Json: object does not start with '{'");
 
     }
     if (getJson().at(lastPosition()) != '}') {
-        throw ParseException("Invalid Json: object does not end with '}'");
+        throwException("Invalid Json: object does not end with '}'");
     }
 }
 
@@ -1533,7 +1551,7 @@ void ObjectParser::checkObjectSemantics() {
 Element StringParser::parse() {
     trim();
     if (not isValidString()) {
-        throw ParseException("Invalid Json, string is invalid as per Json rules.");
+        throwException("Invalid Json, string is invalid as per Json rules.");
     }
     // pos + 1 and size - 2 to erase quotation
     return getJson().substr(currentPosition() + 1, remainingSize() - 2);
