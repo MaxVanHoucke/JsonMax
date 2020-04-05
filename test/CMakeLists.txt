@@ -1,7 +1,7 @@
 add_executable(JsonMaxTests
         main.cpp
-        ValidateStringTest.cpp
-        ParsingTest.cpp
-        )
+        cases/HappyDaysParsing.cpp
+        cases/NightmareParsing.cpp
+        cases/StringValidation.cpp)
 
 target_link_libraries(JsonMaxTests JsonMax)

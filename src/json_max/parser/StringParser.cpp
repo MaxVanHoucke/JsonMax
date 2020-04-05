@@ -10,7 +10,7 @@ using namespace JsonMax;
 Element StringParser::parse() {
     trim();
     if (not isValidString()) {
-        throw ParseException("Invalid Json, string  is invalid as per Json rules.");
+        throw ParseException("Invalid Json, string is invalid as per Json rules.");
     }
     // pos + 1 and size - 2 to erase quotation
     return getJson().substr(currentPosition() + 1, remainingSize() - 2);

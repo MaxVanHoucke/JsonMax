@@ -48,21 +48,29 @@ Element Parser::parse() {
 
 void Parser::moveToNonEmptyPosition() {
     index = json.find_first_not_of(" \t\n", index);
+    if (index == std::string::npos) {
+        index = endIndex;
+    }
 }
 
 
 void Parser::trim() {
-    trimEndWhitespace();
     moveToNonEmptyPosition();
+    trimEndWhitespace();
 }
 
 
 bool Parser::endOfParsing() const {
-    return index == std::string::npos or index >= endIndex;
+    return index == std::string::npos or index >= endIndex - 1;
 }
 
 void Parser::trimEndWhitespace() {
     endIndex = getJson().find_last_not_of(" \t\n", lastPosition());
+    if (endIndex == std::string::npos) {
+        endIndex = index;
+    } else {
+        endIndex++;
+    }
 }
 
 size_t Parser::findIndexAfterElement(char symbol) {
@@ -105,7 +113,7 @@ size_t Parser::findIndexAfterElement(char symbol) {
 }
 
 size_t Parser::remainingSize() const {
-    return endIndex - index + 1;
+    return endIndex - index;
 }
 
 const std::string& Parser::getJson() const {
@@ -117,7 +125,7 @@ size_t Parser::currentPosition() const {
 }
 
 size_t Parser::lastPosition() const {
-    return endIndex;
+    return endIndex - 1;
 }
 
 void Parser::incrementPosition() {

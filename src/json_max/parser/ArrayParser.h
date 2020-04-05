@@ -20,6 +20,10 @@ namespace JsonMax {
 
         Element parse() override;
 
+    protected:
+
+        void checkArraySemantics();
+
     };
 
 }

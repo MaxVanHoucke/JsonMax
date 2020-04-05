@@ -10,19 +10,9 @@ using namespace JsonMax;
 
 Element ArrayParser::parse() {
     trim();
-    if (currentSymbol() != '[') {
-        throw ParseException("Invalid Json: object does not start with '{'");
-
-    }
-
+    checkArraySemantics();
+    // Skip '['
     incrementPosition();
-    
-    if (getJson().at(lastPosition()) != ']') {
-        std::cout << getJson().substr(currentPosition(), remainingSize()) << std::endl;
-        throw ParseException("Invalid Json: array does not end with ']'");
-    }
-
-
 
     Array array;
     while (not endOfParsing()) {
@@ -30,8 +20,18 @@ Element ArrayParser::parse() {
         if (endIndexOfElement == std::string::npos) {
             endIndexOfElement = lastPosition();
         }
-        array.push_back(Parser(getJson(), currentPosition(), endIndexOfElement - 1).parse());
+        array.push_back(Parser(getJson(), currentPosition(), endIndexOfElement).parse());
         setPosition(endIndexOfElement + 1);
     }
     return array;
+}
+
+void ArrayParser::checkArraySemantics() {
+    if (currentSymbol() != '[') {
+        throw ParseException("Invalid Json: object does not start with '{'");
+
+    }
+    if (getJson().at(lastPosition()) != ']') {
+        throw ParseException("Invalid Json: array does not end with ']'");
+    }
 }

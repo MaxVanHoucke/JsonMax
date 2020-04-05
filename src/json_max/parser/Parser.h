@@ -33,9 +33,9 @@ namespace JsonMax {
     public:
 
         /// Constructor, stores the reference of a JSON string
-        explicit Parser(const std::string& str) : Parser(str, 0, str.size() - 1) {}
+        explicit Parser(const std::string& str) : Parser(str, 0, str.size()) {}
 
-        /// Constructor, takes JSON but also the start and end positions (end position is including)
+        /// Constructor, takes JSON but also the start and end positions (end position is not including)
         Parser(const std::string& str, size_t start, size_t end) : json(str), index(start), endIndex(end) {}
 
         /// Parses the stored json

@@ -26,6 +26,8 @@ namespace JsonMax {
 
         void checkForDoublePointAndAdjustIndex();
 
+        void checkObjectSemantics();
+
     };
 
 }
