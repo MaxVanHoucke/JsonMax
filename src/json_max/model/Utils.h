@@ -2,15 +2,15 @@
  * @author Max Van Houcke
  */
 
-#ifndef JSONMAX_TOOLS_H
-#define JSONMAX_TOOLS_H
+#ifndef JSONMAX_MODEL_UTILS_H
+#define JSONMAX_MODEL_UTILS_H
 
 
 #include <string>
 
 namespace JsonMax {
 
-    namespace Tools {
+    namespace Utils {
 
         /// Indents the given string with the given indentation (in spaces)
         std::string indent(const std::string &json, int indentation);
@@ -18,10 +18,8 @@ namespace JsonMax {
         /// Returns the string representation of a double, without any trailing zeroes after the comma
         std::string doubleToString(const double&);
 
-        std::string fileToString(const std::string& fileName);
-
     }
 
 }
 
-#endif //JSONMAX_TOOLS_H
+#endif //JSONMAX_MODEL_UTILS_H

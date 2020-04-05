@@ -2,14 +2,11 @@
  * @author Max Van Houcke
  */
 
-#include <fstream>
-#include <sstream>
-#include "Tools.h"
-#include "Exceptions.h"
+#include "Utils.h"
 
 using namespace JsonMax;
 
-std::string Tools::indent(const std::string &json, int indentation) {
+std::string Utils::indent(const std::string &json, int indentation) {
     std::string output;
     unsigned int spaces = 0;
     bool escape = false;
@@ -58,7 +55,7 @@ std::string Tools::indent(const std::string &json, int indentation) {
     return output;
 }
 
-std::string Tools::doubleToString(const double &dou) {
+std::string Utils::doubleToString(const double &dou) {
     std::string str = std::to_string(dou);
     if (str.find('.') != std::string::npos) {
         while (str.back() == '0' and str[str.length() - 2] != '.') {
@@ -66,15 +63,4 @@ std::string Tools::doubleToString(const double &dou) {
         }
     }
     return str;
-}
-
-
-std::string Tools::fileToString(const std::string &fileName) {
-    std::ifstream in(fileName);
-    if (not in.good()) {
-        throw ParseException("Couldn't open " + fileName);
-    }
-    std::ostringstream stream;
-    stream << in.rdbuf();
-    return stream.str();
 }

@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "ObjectParser.h"
-#include "../Exceptions.h"
+#include "ParseException.h"
 
 using namespace JsonMax;
 

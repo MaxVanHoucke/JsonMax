@@ -4,8 +4,7 @@
 
 #include "Element.h"
 #include "Object.h"
-#include "../Exceptions.h"
-#include "../Tools.h"
+#include "Utils.h"
 
 #include <math.h>
 
@@ -21,7 +20,7 @@ std::string Element::toString(unsigned int ind) const {
             if (data.boolean) return "true";
             else return "false";
         case FRACTION:
-            return Tools::doubleToString(*data.fraction);
+            return Utils::doubleToString(*data.fraction);
         case OBJECT:
             return data.object->toString(ind);
         case STRING:
@@ -33,7 +32,7 @@ std::string Element::toString(unsigned int ind) const {
                 if (i != data.array->size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
-            if (ind) return Tools::indent(arrayElements, ind);
+            if (ind) return Utils::indent(arrayElements, ind);
             return arrayElements;
         }
         case JSON_NULL:

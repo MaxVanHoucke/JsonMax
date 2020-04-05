@@ -3,13 +3,14 @@
  */
 
 #include <iostream>
+
 #include "Parser.h"
-#include "../Tools.h"
 #include "ObjectParser.h"
 #include "ArrayParser.h"
 #include "StringParser.h"
 #include "NumberParser.h"
 
+#include "Utils.h"
 
 using namespace JsonMax;
 
@@ -18,7 +19,7 @@ Element JsonMax::parse(const std::string &json) {
 }
 
 Element JsonMax::parseFile(const std::string &fileName) {
-    std::string fileContent = Tools::fileToString(fileName);
+    std::string fileContent = Utils::fileToString(fileName);
     return parse(fileContent);
 }
 

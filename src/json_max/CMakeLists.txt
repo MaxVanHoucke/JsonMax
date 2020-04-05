@@ -1,5 +1,5 @@
 add_library(JsonMax
-        Tools.cpp
+        model/Utils.cpp
         model/Element.cpp
         model/Object.cpp
         model/Pair.cpp

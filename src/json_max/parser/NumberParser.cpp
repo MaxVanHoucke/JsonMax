@@ -3,7 +3,7 @@
  */
 
 #include "NumberParser.h"
-#include "../Exceptions.h"
+#include "ParseException.h"
 
 using namespace JsonMax;
 

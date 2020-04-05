@@ -170,6 +170,23 @@ namespace JsonMax {
     /// Returns string representation of a type
     std::string toString(Type type);
 
+    /// Forward declaration
+    class Element;
+
+    /// Runtime Type mismatch exception
+    class TypeException : public std::runtime_error {
+    protected:
+
+        TypeException(Type actual, Type expected) : std::runtime_error(
+                "Casting an element of type " + toString(actual) + " to " +
+                toString(expected) + " is not possible.") {
+        }
+
+        explicit TypeException(const std::string &str) : std::runtime_error(str) {}
+
+        friend class Element;
+    };
+
 
 
     /// Forward declarations
@@ -382,6 +399,46 @@ namespace JsonMax {
 
 
 
+    namespace Utils {
+
+        /// Indents the given string with the given indentation (in spaces)
+        std::string indent(const std::string &json, int indentation);
+
+        /// Returns the string representation of a double, without any trailing zeroes after the comma
+        std::string doubleToString(const double&);
+
+    }
+
+
+
+    /// Runtime JSON parsing exception
+    class ParseException : public std::runtime_error {
+    public:
+
+        explicit ParseException(const std::string &message) : std::runtime_error(message) {}
+
+        friend class Parser;
+
+    };
+
+
+
+    namespace Utils {
+
+        std::string fileToString(const std::string &fileName) {
+            std::ifstream in(fileName);
+            if (not in.good()) {
+                throw ParseException("Couldn't open " + fileName);
+            }
+            std::ostringstream stream;
+            stream << in.rdbuf();
+            return stream.str();
+        }
+
+    }
+
+
+
     /**
      * Parses a given string into a json element (object, array, int,...)
      * @param json string
@@ -473,51 +530,6 @@ namespace JsonMax {
 
 
 
-    namespace Tools {
-
-        /// Indents the given string with the given indentation (in spaces)
-        std::string indent(const std::string &json, int indentation);
-
-        /// Returns the string representation of a double, without any trailing zeroes after the comma
-        std::string doubleToString(const double&);
-
-        std::string fileToString(const std::string& fileName);
-
-    }
-
-
-
-    class Element;
-
-    class TypeException : public std::runtime_error {
-    protected:
-
-        TypeException(Type actual, Type expected) : std::runtime_error(
-                "Casting an element of type " + toString(actual) + " to " +
-                toString(expected) + " is not possible.") {
-        }
-
-        explicit TypeException(const std::string &str) : std::runtime_error(str) {}
-
-        friend class Element;
-    };
-
-
-    class ParseException : public std::runtime_error {
-    protected:
-
-        friend Element parse(const std::string &);
-
-        friend Element parseFile(const std::string &);
-
-        friend class Parser;
-
-    public:
-        explicit ParseException(const std::string &message) : std::runtime_error(message) {}
-    };
-
-
-
     /// Parses JSON arrays
     class ArrayParser: public Parser {
     public:
@@ -597,7 +609,7 @@ std::string Element::toString(unsigned int ind) const {
             if (data.boolean) return "true";
             else return "false";
         case FRACTION:
-            return Tools::doubleToString(*data.fraction);
+            return Utils::doubleToString(*data.fraction);
         case OBJECT:
             return data.object->toString(ind);
         case STRING:
@@ -609,7 +621,7 @@ std::string Element::toString(unsigned int ind) const {
                 if (i != data.array->size() - 1) arrayElements += ", ";
             }
             arrayElements += "]";
-            if (ind) return Tools::indent(arrayElements, ind);
+            if (ind) return Utils::indent(arrayElements, ind);
             return arrayElements;
         }
         case JSON_NULL:
@@ -1076,7 +1088,7 @@ std::string Object::toString(unsigned int ind) const {
     output += "}";
 
     if (ind) {
-        return Tools::indent(output, ind);
+        return Utils::indent(output, ind);
     }
 
     return output;
@@ -1187,12 +1199,94 @@ void Object::clear() {
 }
 
 
+std::string Utils::indent(const std::string &json, int indentation) {
+    std::string output;
+    unsigned int spaces = 0;
+    bool escape = false;
+    bool inString = false;
+
+    for (size_t i = 0; i < json.size(); i++) {
+        char symbol = json[i];
+
+        // Two special cases, escaped symbol or in string
+        if (escape) {
+            output += symbol;
+            escape = false;
+            continue;
+        } else if (inString) {
+            inString = '"' != symbol;
+            output += symbol;
+            continue;
+        }
+
+        // Non empty object or array started
+        if ((symbol == '{' and json[i + 1] != '}') or (symbol == '[' and json[i + 1] != ']')) {
+            spaces += indentation;
+            output += std::string(1, symbol) + "\n" + std::string(spaces, ' ');
+        }
+        // Non empty object or array ended
+        else if ((symbol == '}' and json[i - 1] != '{') or (symbol == ']' and json[i - 1] != '[')) {
+            spaces -= indentation;
+            output += "\n" + std::string(spaces, ' ') + std::string(1, symbol);
+        }
+        // Comma so new line and indent
+        else if (symbol == ',') {
+            output += ",\n" + std::string(spaces - 1, ' ');
+        }
+        // Other symbols
+        else {
+            // Check if escape or string started
+            if (symbol == '\\') {
+                escape = true;
+            } else if (symbol == '"') {
+                inString = true;
+            }
+            output += symbol;
+        }
+    }
+
+    return output;
+}
+
+std::string Utils::doubleToString(const double &dou) {
+    std::string str = std::to_string(dou);
+    if (str.find('.') != std::string::npos) {
+        while (str.back() == '0' and str[str.length() - 2] != '.') {
+            str.pop_back();
+        }
+    }
+    return str;
+}
+
+
+std::string toString(Type type) {
+    switch (type) {
+        case INTEGER:
+            return "INTEGER";
+        case BOOLEAN:
+            return "BOOLEAN";
+        case FRACTION:
+            return "FLOATING POINT";
+        case OBJECT:
+            return "JSON OBJECT";
+        case STRING:
+            return "STRING";
+        case ARRAY:
+            return "JSON ARRAY";
+        case JSON_NULL:
+            return "JSON NULL";
+        case UNINITIALIZED:
+            return "UNINITIALIZED";
+    }
+}
+
+
 Element parse(const std::string &json) {
     return Parser(json).parse();
 }
 
 Element parseFile(const std::string &fileName) {
-    std::string fileContent = Tools::fileToString(fileName);
+    std::string fileContent = Utils::fileToString(fileName);
     return parse(fileContent);
 }
 
@@ -1303,99 +1397,6 @@ void Parser::setPosition(size_t pos) {
 
 char Parser::currentSymbol() const {
     return getJson().at(currentPosition());
-}
-
-
-std::string Tools::indent(const std::string &json, int indentation) {
-    std::string output;
-    unsigned int spaces = 0;
-    bool escape = false;
-    bool inString = false;
-
-    for (size_t i = 0; i < json.size(); i++) {
-        char symbol = json[i];
-
-        // Two special cases, escaped symbol or in string
-        if (escape) {
-            output += symbol;
-            escape = false;
-            continue;
-        } else if (inString) {
-            inString = '"' != symbol;
-            output += symbol;
-            continue;
-        }
-
-        // Non empty object or array started
-        if ((symbol == '{' and json[i + 1] != '}') or (symbol == '[' and json[i + 1] != ']')) {
-            spaces += indentation;
-            output += std::string(1, symbol) + "\n" + std::string(spaces, ' ');
-        }
-        // Non empty object or array ended
-        else if ((symbol == '}' and json[i - 1] != '{') or (symbol == ']' and json[i - 1] != '[')) {
-            spaces -= indentation;
-            output += "\n" + std::string(spaces, ' ') + std::string(1, symbol);
-        }
-        // Comma so new line and indent
-        else if (symbol == ',') {
-            output += ",\n" + std::string(spaces - 1, ' ');
-        }
-        // Other symbols
-        else {
-            // Check if escape or string started
-            if (symbol == '\\') {
-                escape = true;
-            } else if (symbol == '"') {
-                inString = true;
-            }
-            output += symbol;
-        }
-    }
-
-    return output;
-}
-
-std::string Tools::doubleToString(const double &dou) {
-    std::string str = std::to_string(dou);
-    if (str.find('.') != std::string::npos) {
-        while (str.back() == '0' and str[str.length() - 2] != '.') {
-            str.pop_back();
-        }
-    }
-    return str;
-}
-
-
-std::string Tools::fileToString(const std::string &fileName) {
-    std::ifstream in(fileName);
-    if (not in.good()) {
-        throw ParseException("Couldn't open " + fileName);
-    }
-    std::ostringstream stream;
-    stream << in.rdbuf();
-    return stream.str();
-}
-
-
-std::string toString(Type type) {
-    switch (type) {
-        case INTEGER:
-            return "INTEGER";
-        case BOOLEAN:
-            return "BOOLEAN";
-        case FRACTION:
-            return "FLOATING POINT";
-        case OBJECT:
-            return "JSON OBJECT";
-        case STRING:
-            return "STRING";
-        case ARRAY:
-            return "JSON ARRAY";
-        case JSON_NULL:
-            return "JSON NULL";
-        case UNINITIALIZED:
-            return "UNINITIALIZED";
-    }
 }
 
 

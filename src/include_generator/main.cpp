@@ -79,9 +79,10 @@ int main() {
     out << fromHeader(root + "src/json_max/model/Type.h");
     out << fromHeader(root + "src/json_max/model/Element.h");
     out << fromHeader(root + "src/json_max/model/Pair.h");
+    out << fromHeader(root + "src/json_max/model/Utils.h");
+    out << fromHeader(root + "src/json_max/parser/ParseException.h");
+    out << fromHeader(root + "src/json_max/parser/Utils.h");
     out << fromHeader(root + "src/json_max/parser/Parser.h");
-    out << fromHeader(root + "src/json_max/Tools.h");
-    out << fromHeader(root + "src/json_max/Exceptions.h");
     out << fromHeader(root + "src/json_max/parser/ArrayParser.h");
     out << fromHeader(root + "src/json_max/parser/NumberParser.h");
     out << fromHeader(root + "src/json_max/parser/ObjectParser.h");
@@ -89,9 +90,9 @@ int main() {
     out << fromCpp(root + "src/json_max/model/Element.cpp");
     out << fromCpp(root + "src/json_max/model/Pair.cpp");
     out << fromCpp(root + "src/json_max/model/Object.cpp");
-    out << fromCpp(root + "src/json_max/parser/Parser.cpp");
-    out << fromCpp(root + "src/json_max/Tools.cpp");
+    out << fromCpp(root + "src/json_max/model/Utils.cpp");
     out << fromCpp(root + "src/json_max/model/Type.cpp");
+    out << fromCpp(root + "src/json_max/parser/Parser.cpp");
     out << fromCpp(root + "src/json_max/parser/ArrayParser.cpp");
     out << fromCpp(root + "src/json_max/parser/NumberParser.cpp");
     out << fromCpp(root + "src/json_max/parser/ObjectParser.cpp");

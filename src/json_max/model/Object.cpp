@@ -4,7 +4,7 @@
 
 #include "Object.h"
 #include "Element.h"
-#include "../Tools.h"
+#include "Utils.h"
 #include "Pair.h"
 
 using namespace JsonMax;
@@ -161,7 +161,7 @@ std::string Object::toString(unsigned int ind) const {
     output += "}";
 
     if (ind) {
-        return Tools::indent(output, ind);
+        return Utils::indent(output, ind);
     }
 
     return output;
